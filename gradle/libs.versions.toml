@@ -1,0 +1,74 @@
+[versions]
+android-plugin = "8.4.1"
+
+android-sdk-compile = "34"
+android-sdk-target = "34"
+android-sdk-min = "28"
+
+androidx-activity = "1.9.0"
+
+atomicfu = "0.24.0"
+
+composeJetbrains = "1.6.10"
+
+conventions = "0.0.74"
+
+detekt = "1.23.6"
+detektCompose = "0.4.3"
+detektEygraber = "1.0.11"
+
+kotlin = "2.0.0"
+
+kotlinInject = "0.7.0-SNAPSHOT"
+
+kotlinx-coroutines = "1.8.1"
+kotlinx-serialization = "1.6.3"
+
+ksp = "2.0.0-1.0.21"
+
+ktlint = "1.2.1"
+
+vice = "0.0.5-SNAPSHOT"
+
+[plugins]
+completeKotlin = { id = "com.louiscad.complete-kotlin", version = "1.1.0" }
+conventions = { id = "com.eygraber.conventions", version.ref = "conventions" }
+dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version = "1.31.0" }
+kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+[libraries]
+android-desugar = "com.android.tools:desugar_jdk_libs:2.0.4"
+
+androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+
+buildscript-android = { module = "com.android.tools.build:gradle", version.ref = "android-plugin" }
+buildscript-androidCacheFix = { module = "gradle.plugin.org.gradle.android:android-cache-fix-gradle-plugin", version = "3.0.1" }
+buildscript-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
+buildscript-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+buildscript-compose-jetbrains = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeJetbrains" }
+buildscript-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+buildscript-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "1.9.20" }
+buildscript-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+buildscript-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.28.0" }
+
+compose-material3-windowSizeClass = "dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.5.0"
+
+detektCompose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektCompose" }
+detektEygraber-formatting = { module = "com.eygraber.detekt.rules:formatting", version.ref = "detektEygraber" }
+detektEygraber-style = { module = "com.eygraber.detekt.rules:style", version.ref = "detektEygraber" }
+
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cbor", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+
+kotlinInject-compiler = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp", version.ref = "kotlinInject" }
+kotlinInject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime-kmp", version.ref = "kotlinInject" }
+
+# not actually used; just here so renovate picks it up
+ktlint = { module = "com.pinterest.ktlint:ktlint-bom", version.ref = "ktlint" }
+
+uri = "com.eygraber:uri-kmp:0.0.18"
+
+vice-nav = { module = "com.eygraber:vice-nav", version.ref = "vice" }
+vice-sources = { module = "com.eygraber:vice-sources", version.ref = "vice" }

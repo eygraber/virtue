@@ -44,6 +44,14 @@ gradleConventions {
   }
 }
 
+dependencyAnalysis {
+  issues {
+    onAny {
+      severity("ignore")
+    }
+  }
+}
+
 ksp {
   arg("me.tatarka.inject.generateCompanionExtensions", "true")
 }

@@ -18,6 +18,8 @@ kotlin {
     commonMain {
       dependencies {
         api(projects.virtueDiScopes)
+
+        api(libs.kotlinInject.runtime)
       }
     }
   }

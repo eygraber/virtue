@@ -42,6 +42,14 @@ kotlin {
   }
 }
 
+dependencyAnalysis {
+  issues {
+    onAny {
+      severity("ignore")
+    }
+  }
+}
+
 gradleConventions {
   kotlin {
     explicitApiMode = ExplicitApiMode.Disabled

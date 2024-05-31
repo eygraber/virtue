@@ -6,6 +6,7 @@ android-sdk-target = "34"
 android-sdk-min = "28"
 
 androidx-activity = "1.9.0"
+androidx-lifecycle = "2.8.0"
 
 atomicfu = "0.24.0"
 
@@ -33,14 +34,17 @@ vice = "0.0.5-SNAPSHOT"
 [plugins]
 completeKotlin = { id = "com.louiscad.complete-kotlin", version = "1.1.0" }
 conventions = { id = "com.eygraber.conventions", version.ref = "conventions" }
-dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version = "1.31.0" }
+dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version = "1.32.0" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [libraries]
 android-desugar = "com.android.tools:desugar_jdk_libs:2.0.4"
 
+androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-annotations = "androidx.annotation:annotation:1.8.0"
+androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common", version.ref = "androidx-lifecycle" }
 
 buildscript-android = { module = "com.android.tools.build:gradle", version.ref = "android-plugin" }
 buildscript-androidCacheFix = { module = "gradle.plugin.org.gradle.android:android-cache-fix-gradle-plugin", version = "3.0.1" }
@@ -60,15 +64,18 @@ detektEygraber-style = { module = "com.eygraber.detekt.rules:style", version.ref
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cbor", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 kotlinInject-compiler = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp", version.ref = "kotlinInject" }
-kotlinInject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime-kmp", version.ref = "kotlinInject" }
+kotlinInject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime", version.ref = "kotlinInject" }
+kotlinInject-runtimeKsp = { module = "me.tatarka.inject:kotlin-inject-runtime-kmp", version.ref = "kotlinInject" }
 
 # not actually used; just here so renovate picks it up
 ktlint = { module = "com.pinterest.ktlint:ktlint-bom", version.ref = "ktlint" }
 
 uri = "com.eygraber:uri-kmp:0.0.18"
 
+vice-core = { module = "com.eygraber:vice-core", version.ref = "vice" }
 vice-nav = { module = "com.eygraber:vice-nav", version.ref = "vice" }
 vice-sources = { module = "com.eygraber:vice-sources", version.ref = "vice" }

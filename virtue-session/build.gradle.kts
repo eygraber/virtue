@@ -36,17 +36,20 @@ kotlin {
       dependencies {
         api(projects.virtueBackPressDispatch)
         api(projects.virtueDiComponents)
-        implementation(projects.virtueDiScopes)
+        api(projects.virtueDiScopes)
         api(projects.virtueNav)
-        implementation(projects.virtuePlatform)
         api(projects.virtueSessionState)
-        api(projects.virtueThemeCompose)
+        api(projects.virtueTheme)
+        implementation(projects.virtueThemeCompose)
 
         api(compose.material3)
 
         api(libs.kotlinx.coroutines.core)
+        api(libs.kotlinInject.runtime)
+        implementation(libs.kotlinx.serialization.core)
         implementation(libs.kotlinx.serialization.json)
         api(libs.uri)
+        api(libs.vice.core)
         api(libs.vice.nav)
       }
     }

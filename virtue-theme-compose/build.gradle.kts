@@ -20,7 +20,11 @@ kotlin {
       dependencies {
         api(projects.virtueTheme)
 
+        implementation(compose.foundation)
         implementation(compose.material3)
+        api(compose.runtime)
+
+        implementation(libs.kotlinx.coroutines.core)
       }
     }
   }

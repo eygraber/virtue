@@ -32,7 +32,7 @@ kotlin {
         api(compose.runtime)
         implementation(compose.ui)
 
-        implementation(libs.kotlinInject.runtime)
+        implementation(libs.kotlinInject.runtimeKsp)
       }
     }
   }

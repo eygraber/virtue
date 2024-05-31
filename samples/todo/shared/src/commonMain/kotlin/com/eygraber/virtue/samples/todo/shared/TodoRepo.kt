@@ -1,10 +1,12 @@
 package com.eygraber.virtue.samples.todo.shared
 
+import com.eygraber.virtue.di.scopes.AppSingleton
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import me.tatarka.inject.annotations.Inject
 import kotlin.random.Random
 
+@AppSingleton
 @Inject
 class TodoRepo {
   private val mutableItems = MutableStateFlow<List<TodoItem>>(emptyList())

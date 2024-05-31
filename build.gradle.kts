@@ -68,7 +68,26 @@ dependencyAnalysis {
     all {
       onAny {
         severity("fail")
+
+        exclude("androidx.compose.animation:animation")
+        exclude("androidx.compose.animation:animation-core")
+        exclude("androidx.compose.foundation:foundation")
+        exclude("androidx.compose.foundation:foundation-layout")
+        exclude("androidx.compose.material3:material3")
+        exclude("androidx.compose.runtime:runtime")
+        exclude("androidx.compose.runtime:runtime-saveable")
+        exclude("androidx.compose.ui:ui")
+
+        exclude("androidx.navigation:navigation-common")
+        exclude("androidx.navigation:navigation-compose")
+        exclude("androidx.navigation:navigation-runtime")
+
         exclude("org.jetbrains.kotlin:kotlin-stdlib")
+      }
+
+      // currently broken for KMP - https://github.com/autonomousapps/dependency-analysis-gradle-plugin/issues/228
+      onUsedTransitiveDependencies {
+        severity("ignore")
       }
     }
   }

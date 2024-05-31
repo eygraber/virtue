@@ -1,4 +1,3 @@
-import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 
 plugins {
@@ -23,8 +22,8 @@ compose {
 
 dependencyAnalysis {
   issues {
-    onUnusedDependencies {
-      exclude(ComposePlugin.DesktopDependencies.currentOs)
+    onAny {
+      severity("ignore")
     }
   }
 }

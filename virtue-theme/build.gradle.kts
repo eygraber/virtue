@@ -18,8 +18,10 @@ kotlin {
     commonMain {
       dependencies {
         implementation(projects.virtueConfig)
-        implementation(projects.virtueDiScopes)
+        api(projects.virtueDiScopes)
 
+        api(libs.kotlinInject.runtime)
+        api(libs.kotlinInject.runtimeKsp)
         api(libs.kotlinx.coroutines.core)
       }
     }

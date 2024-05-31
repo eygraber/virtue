@@ -18,17 +18,28 @@ kotlin {
   sourceSets {
     androidMain {
       dependencies {
-        api(libs.androidx.activityCompose)
+        api(libs.androidx.activity)
+        implementation(libs.androidx.activityCompose)
+        implementation(libs.androidx.annotations)
+        implementation(libs.androidx.lifecycle.common)
       }
     }
 
     commonMain {
       dependencies {
+        api(projects.virtueConfig)
+        api(projects.virtueDiComponents)
+        api(projects.virtueNav)
         api(projects.virtueSession)
+        implementation(projects.virtueTheme)
+        implementation(projects.virtueSessionState)
         implementation(projects.virtueThemeCompose)
 
         implementation(compose.foundation)
         api(compose.material3)
+
+        implementation(libs.kotlinx.coroutines.core)
+        implementation(libs.uri)
       }
     }
   }

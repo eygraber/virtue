@@ -31,6 +31,8 @@ kotlin {
         api(projects.virtueConfig)
         api(projects.virtueDiScopes)
         api(projects.virtueTheme)
+
+        api(libs.kotlinInject.runtime)
       }
     }
   }

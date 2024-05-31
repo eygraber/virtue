@@ -56,6 +56,8 @@ jobs:
         run: ./gradlew detektAll
 
   detekt-apple:
+    # Enable when https://github.com/JetBrains/compose-multiplatform/issues/4777 is resolved
+    if: false
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4

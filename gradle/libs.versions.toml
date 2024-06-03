@@ -10,7 +10,7 @@ androidx-lifecycle = "2.8.1"
 
 atomicfu = "0.24.0"
 
-composeJetbrains = "1.6.10"
+composeJetbrains = "1.6.11"
 
 conventions = "0.0.74"
 

@@ -49,7 +49,7 @@ rootProject.name = "virtue"
 
 plugins {
   id("com.eygraber.conventions.settings") version "0.0.74"
-  id("com.gradle.develocity") version "3.17.4"
+  id("com.gradle.develocity") version "3.17.5"
 }
 
 include(":samples:todo:androidApp")

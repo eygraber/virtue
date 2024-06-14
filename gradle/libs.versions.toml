@@ -20,7 +20,7 @@ detektEygraber = "1.0.11"
 
 kotlin = "2.0.0"
 
-kotlinInject = "0.7.0-SNAPSHOT"
+kotlinInject = "0.7.1"
 
 kotlinx-coroutines = "1.8.1"
 kotlinx-serialization = "1.7.0"

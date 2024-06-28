@@ -12,7 +12,7 @@ atomicfu = "0.24.0"
 
 composeJetbrains = "1.6.11"
 
-conventions = "0.0.74"
+conventions = "0.0.75"
 
 detekt = "1.23.6"
 detektCompose = "0.4.4"

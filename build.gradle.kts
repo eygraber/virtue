@@ -8,7 +8,6 @@ buildscript {
   dependencies {
     classpath(libs.buildscript.android)
     classpath(libs.buildscript.androidCacheFix)
-    classpath(libs.buildscript.atomicfu)
     classpath(libs.buildscript.compose.compiler)
     classpath(libs.buildscript.compose.jetbrains)
     classpath(libs.buildscript.detekt)

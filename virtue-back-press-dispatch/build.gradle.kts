@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
   id("com.eygraber.conventions-kotlin-multiplatform")
   id("com.eygraber.conventions-android-library")
@@ -15,6 +17,17 @@ kotlin {
   defaultKmpTargets(
     project = project,
   )
+
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    common {
+      group("cmpWithoutDesktop") {
+        withIos()
+        withJs()
+        withWasmJs()
+      }
+    }
+  }
 
   sourceSets {
     androidMain {

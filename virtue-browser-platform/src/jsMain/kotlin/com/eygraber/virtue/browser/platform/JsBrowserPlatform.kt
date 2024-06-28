@@ -32,7 +32,7 @@ public class JsBrowserPlatform(
   }
 
   override fun replaceHistoryState(index: Int, display: String) {
-    browserHistory.pushState(jsHistoryState(index), "", display)
+    browserHistory.replaceState(jsHistoryState(index), "", display)
   }
 
   override fun go(delta: Int) {

@@ -32,16 +32,20 @@ internal class WebHistory(
 
   override fun updateCurrent(display: String): History.Entry =
     history.updateCurrent(display).apply {
+      println("Web - Updating $index with $display")
       browserPlatform.replaceHistoryState(index, display)
     }
 
-  override fun move(delta: Int) {
+  override fun move(delta: Int): History.Change {
     history.move(delta)
     browserPlatform.go(delta)
+    return History.Change.Empty
   }
 
-  override suspend fun awaitChange(): History.Change =
-    when(val newIndex = browserPlatform.awaitPopstate()) {
+  override suspend fun awaitChange(): History.Change {
+    val currentIndex = browserPlatform.currentHistoryEntryIndex
+
+    return when(val newIndex = browserPlatform.awaitPopstate()) {
       BrowserPlatform.BAD_POPSTATE -> History.Change.Empty
 
       else -> if(isBackPress(newIndex)) {
@@ -51,31 +55,38 @@ internal class WebHistory(
         // since at that point the browser history and timeline history should be the same
         if(backPressDispatcher.hasEnabledCallbacks()) {
           browserPlatform.go(1)
+          backPressDispatcher.onBackPressed()
+          History.Change.Empty
         }
-
-        backPressDispatcher.onBackPressed()
-
-        History.Change.Empty
+        else {
+          history.move(-1)
+          History.Change.Pop(1)
+        }
       }
       else {
-        handlePopStateEvent(newIndex)
+        handlePopStateEvent(currentIndex, newIndex)
       }
     }
+  }
 
   override fun toString(): String = history.toString()
 
-  private fun handlePopStateEvent(newIndex: Int): History.Change {
-    val currentIndex = browserPlatform.currentHistoryEntryIndex
+  private fun handlePopStateEvent(
+    currentIndex: Int,
+    newIndex: Int
+  ): History.Change {
     val delta = newIndex - currentIndex
+    history.move(delta)
     return when {
       delta < 0 -> History.Change.Pop(currentIndex - newIndex)
 
       delta > 0 -> {
         val origin = browserPlatform.currentOrigin
+        println("Navigating forward from $currentIndex to $newIndex in ${history.timelineDisplays}")
         History.Change.Navigate(
           history
             .timelineDisplays
-            .subList(currentIndex + 1, newIndex)
+            .slice(currentIndex + 1..newIndex)
             .map { Url.parse("${origin}$it") },
         )
       }

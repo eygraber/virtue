@@ -13,6 +13,13 @@ pluginManagement {
 
     mavenCentral()
 
+    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev") {
+      content {
+        includeGroup("org.jetbrains.kotlin")
+        includeGroup("org.jetbrains.kotlin.plugin.serialization")
+      }
+    }
+
     maven("https://oss.sonatype.org/content/repositories/snapshots") {
       mavenContent {
         snapshotsOnly()
@@ -22,6 +29,13 @@ pluginManagement {
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots") {
       mavenContent {
         snapshotsOnly()
+      }
+    }
+
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") {
+      content {
+        // excludeGroup("org.jetbrains.kotlin")
+        includeGroupByRegex("org\\.jetbrains.*")
       }
     }
 
@@ -36,11 +50,29 @@ dependencyResolutionManagement {
   // repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 
   repositories {
+    mavenLocal {
+      content {
+        includeModuleByRegex("com.eygraber", "vice.*")
+      }
+    }
+
+    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev") {
+      content {
+        includeGroup("org.jetbrains.kotlin")
+      }
+    }
+
+    mavenLocal {
+      content {
+        includeGroupByRegex("org\\.jetbrains.*")
+      }
+    }
+
     addCommonRepositories(
       includeMavenCentral = true,
       includeMavenCentralSnapshots = true,
       includeGoogle = true,
-      includeJetbrainsComposeDev = false,
+      includeJetbrainsComposeDev = true,
     )
   }
 }
@@ -54,7 +86,7 @@ plugins {
 
 include(":samples:todo:androidApp")
 include(":samples:todo:desktopApp")
-include(":samples:todo:ios-framework")
+// include(":samples:todo:ios-framework")
 include(":samples:todo:shared")
 include(":samples:todo:webJsApp")
 include(":samples:todo:webWasmApp")

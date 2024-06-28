@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.eygraber.virtue.back.press.dispatch.OnBackPressDispatcherProvider
 import com.eygraber.virtue.back.press.dispatch.WithBackPressDispatching
 import com.eygraber.virtue.config.DesktopVirtueConfig
 import com.eygraber.virtue.di.components.VirtueAppComponent
@@ -28,7 +29,7 @@ public fun <A : VirtueAppComponent, S : GenericVirtueSessionComponent> virtueApp
   initialSessionComponentFactory: (A, VirtuePlatformSessionComponent) -> S,
   config: DesktopVirtueConfig,
   sessionParams: VirtueSession.Params<S>,
-  configureInitialSessionParams: (VirtueSessionParams) -> VirtueSessionParams = { it },
+  configureInitialSessionParams: (VirtueSessionParams, S) -> VirtueSessionParams = { params, _ -> params },
   onAllSessionsClosed: ApplicationScope.() -> Unit = { exitApplication() },
   defaultThemeSetting: ThemeSetting = ThemeSetting.System,
 ) {
@@ -42,12 +43,13 @@ public fun <A : VirtueAppComponent, S : GenericVirtueSessionComponent> virtueApp
   val initialSessionComponent = initialSessionComponentFactory(
     appComponent,
     virtuePlatformSessionComponent,
-  ) as GenericVirtueSessionComponent
+  )
 
   val initialSessionParams = configureInitialSessionParams(
     VirtueSessionParams(
       title = config.appName,
     ),
+    initialSessionComponent,
   )
 
   val sessionManager = initialSessionComponent.sessionManager.apply {
@@ -93,7 +95,7 @@ public fun <A : VirtueAppComponent, S : GenericVirtueSessionComponent> virtueApp
           )
 
           WithBackPressDispatching(
-            onBackPressedDispatcher = sessionComponent.onBackPressedDispatcher,
+            onBackPressedDispatcher = (sessionComponent as OnBackPressDispatcherProvider).onBackPressedDispatcher,
           ) {
             @Suppress("UNCHECKED_CAST")
             sessionComponent.session.SessionUi(

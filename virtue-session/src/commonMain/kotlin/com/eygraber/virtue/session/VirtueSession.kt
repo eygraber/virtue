@@ -1,25 +1,33 @@
 package com.eygraber.virtue.session
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.eygraber.uri.Url
+import androidx.navigation.NavHostController
+import com.eygraber.vice.nav.LocalSharedTransitionScopes
+import com.eygraber.vice.nav.SharedTransitionScopes
 import com.eygraber.virtue.back.press.dispatch.BackHandler
 import com.eygraber.virtue.back.press.dispatch.PlatformNavigationHandler
 import com.eygraber.virtue.di.scopes.SessionSingleton
 import com.eygraber.virtue.nav.VirtueDeepLink
+import com.eygraber.virtue.nav.currentBackstackWithoutGraphs
 import com.eygraber.virtue.nav.rememberVirtueNavController
-import com.eygraber.virtue.nav.virtueNavigate
 import com.eygraber.virtue.session.history.History
 import com.eygraber.virtue.session.history.moveForward
 import com.eygraber.virtue.session.history.rememberHistory
@@ -31,6 +39,68 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.jvm.JvmOverloads
+
+@Composable
+public fun VirtueAnimatedContentScope(
+  content: @Composable AnimatedContentScope.() -> Unit
+) {
+  LocalSharedTransitionScopes.current.run {
+    val animated = animated
+    if(animated != null) {
+      with(animated) {
+        content()
+      }
+    }
+  }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+public fun Modifier.virtueSharedBounds(
+  key: Any,
+  enter: EnterTransition = EnterTransition.None,
+  exit: ExitTransition = ExitTransition.None,
+): Modifier = then(
+  LocalSharedTransitionScopes.current.run {
+    val shared = shared
+    val animated = animated
+    if(shared != null && animated != null) {
+      with(shared) {
+        Modifier.sharedBounds(
+          rememberSharedContentState(key),
+          animated,
+          enter = enter,
+          exit = exit,
+        )
+      }
+    }
+    else {
+      Modifier
+    }
+  }
+)
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+public fun Modifier.virtueSharedElement(
+  key: Any,
+): Modifier = then(
+  LocalSharedTransitionScopes.current.run {
+    val shared = shared
+    val animated = animated
+    if(shared != null && animated != null) {
+      with(shared) {
+        Modifier.sharedElement(
+          rememberSharedContentState(key),
+          animated
+        )
+      }
+    }
+    else {
+      Modifier
+    }
+  }
+)
 
 @SessionSingleton
 @Inject
@@ -66,6 +136,7 @@ public class VirtueSession(
 
   private var isBackHandlerEnabled by mutableStateOf(false)
 
+  @OptIn(ExperimentalSharedTransitionApi::class)
   @Suppress("ModifierMissing")
   @Composable
   public fun <T : GenericVirtueSessionComponent> SessionUi(
@@ -81,12 +152,10 @@ public class VirtueSession(
     SyncHistoryAndBackstackEffect(
       navController,
       history,
-      deepLinkMapper::mapToRoute,
     )
 
     HandleDeepLinks(
       navController,
-      deepLinkMapper,
       params.deepLinksFlow,
     )
 
@@ -103,23 +172,33 @@ public class VirtueSession(
         else -> params.lightColorScheme
       },
     ) {
-      Box {
-        PlatformNavigation(history)
+      PlatformNavigation(
+        history = history,
+        navController = navController,
+      )
 
-        Box(
-          modifier = Modifier.fillMaxSize(),
-        ) {
-          VirtueNavHost(
-            navController = navController,
-            startDestination = params.startDestination,
-            params = params.navHostParams,
+      Box(
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
+      ) {
+        SharedTransitionLayout {
+          CompositionLocalProvider(
+            LocalSharedTransitionScopes provides SharedTransitionScopes(
+              shared = this,
+              animated = null
+            )
           ) {
-            with(params.navGraphBuilder) {
-              buildGraph(
-                displayRoute = { history.updateCurrent(it.display) },
-                sessionComponent = sessionComponent,
-                navController = navController,
-              )
+            VirtueNavHost(
+              navController = navController,
+              startDestination = params.startDestination,
+              params = params.navHostParams,
+            ) {
+              with(params.navGraphBuilder) {
+                buildGraph(
+                  displayRoute = { history.updateCurrent(it.display) },
+                  sessionComponent = sessionComponent,
+                  navController = navController,
+                )
+              }
             }
           }
         }
@@ -140,9 +219,8 @@ public class VirtueSession(
   private fun BackstackChangeEffect(navController: NavController) {
     LaunchedEffect(navController) {
       launch {
-        navController.currentBackStack.collect {
-          // need to account for the root graph in the size
-          isBackHandlerEnabled = it.size > 2
+        navController.currentBackstackWithoutGraphs.collect {
+          isBackHandlerEnabled = it.size > 1
         }
       }
     }
@@ -152,14 +230,12 @@ public class VirtueSession(
   private fun SyncHistoryAndBackstackEffect(
     navController: NavController,
     history: History,
-    deepLinkToRoute: (Url) -> Any,
   ) {
-    val updatedUrlToRoute by rememberUpdatedState(deepLinkToRoute)
     LaunchedEffect(history, navController) {
       launch {
         navController.syncWithHistory(
           history = history,
-          urlToRoute = updatedUrlToRoute,
+          deepLinkMapper = deepLinkMapper::mapToRoute,
           debug = true,
         )
       }
@@ -169,28 +245,40 @@ public class VirtueSession(
   @Composable
   private fun HandleDeepLinks(
     navController: NavController,
-    deepLinkMapper: VirtueDeepLinkMapper,
     deepLinksFlow: Flow<VirtueDeepLink>,
   ) {
     LaunchedEffect(deepLinksFlow) {
       launch {
         deepLinksFlow.collect { deepLink ->
-          navController.virtueNavigate(
-            route = deepLinkMapper.mapToRoute(deepLink.uri),
-            navOptions = deepLink.navOptions,
-            navigatorExtras = deepLink.navigatorExtras,
-          )
+          deepLinkMapper.mapToRoute(deepLink.uri)?.let { deepLinkUri ->
+            navController.navigate(
+              route = deepLinkUri,
+              navOptions = deepLink.navOptions,
+              navigatorExtras = deepLink.navigatorExtras,
+            )
+          }
         }
       }
     }
   }
 
   @Composable
-  private fun PlatformNavigation(history: History) {
+  private fun PlatformNavigation(
+    history: History,
+    navController: NavHostController,
+  ) {
     PlatformNavigationHandler(
       onForwardPress = {
         if(history.canGoForward) {
-          history.moveForward()
+          val change = history.moveForward()
+          if(change is History.Change.Navigate) {
+            change.urlRoutes.forEach { urlRoute ->
+              // disable history so SyncNavAndHistory doesn't get confused
+              // it will re-enable it when it is ready
+              history.isEnabled = false
+              deepLinkMapper.mapToRoute(urlRoute)?.let(navController::navigate)
+            }
+          }
         }
       },
     )

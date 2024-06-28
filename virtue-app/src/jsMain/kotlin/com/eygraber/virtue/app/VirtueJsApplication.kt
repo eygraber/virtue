@@ -55,7 +55,7 @@ public fun <A : VirtueAppComponent, S : GenericVirtueSessionComponent> virtueApp
           params = sessionParams.copy(
             startDestination = sessionComponent.deepLinkMapper.mapToRoute(
               Url.parse(webPlatformComponent.browserLocation.href),
-            ),
+            ) ?: sessionParams.startDestination,
           ),
         )
       }

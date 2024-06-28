@@ -32,7 +32,7 @@ public class WasmBrowserPlatform(
   }
 
   override fun replaceHistoryState(index: Int, display: String) {
-    browserHistory.pushState(wasmHistoryState(index), "", display)
+    browserHistory.replaceState(wasmHistoryState(index), "", display)
   }
 
   override fun go(delta: Int) {

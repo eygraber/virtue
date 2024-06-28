@@ -7,11 +7,12 @@ import androidx.compose.animation.SizeTransform
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
+import androidx.navigation.compose.navigation
 import kotlin.jvm.JvmSuppressWildcards
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
-public expect inline fun <reified T : Any> NavGraphBuilder.nestedGraph(
+public inline fun <reified T : Any> NavGraphBuilder.nestedGraph(
   startDestination: KClass<*>,
   typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
   noinline enterTransition: (
@@ -35,9 +36,21 @@ public expect inline fun <reified T : Any> NavGraphBuilder.nestedGraph(
     @JvmSuppressWildcards SizeTransform?
   )? = null,
   noinline builder: NavGraphBuilder.() -> Unit,
-)
+) {
+  navigation<T>(
+    startDestination = startDestination,
+    typeMap = typeMap,
+    deepLinks = emptyList(),
+    enterTransition = enterTransition,
+    exitTransition = exitTransition,
+    popEnterTransition = popEnterTransition,
+    popExitTransition = popExitTransition,
+    sizeTransform = sizeTransform,
+    builder = builder,
+  )
+}
 
-public expect inline fun <reified T : Any> NavGraphBuilder.nestedGraph(
+public inline fun <reified T : Any> NavGraphBuilder.nestedGraph(
   startDestination: Any,
   typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
   noinline enterTransition: (
@@ -61,4 +74,16 @@ public expect inline fun <reified T : Any> NavGraphBuilder.nestedGraph(
     @JvmSuppressWildcards SizeTransform?
   )? = null,
   noinline builder: NavGraphBuilder.() -> Unit,
-)
+) {
+  navigation<T>(
+    startDestination = startDestination,
+    typeMap = typeMap,
+    deepLinks = emptyList(),
+    enterTransition = enterTransition,
+    exitTransition = exitTransition,
+    popEnterTransition = popEnterTransition,
+    popExitTransition = popExitTransition,
+    sizeTransform = sizeTransform,
+    builder = builder,
+  )
+}

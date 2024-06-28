@@ -21,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.eygraber.virtue.session.virtueSharedBounds
+import com.eygraber.virtue.session.virtueSharedElement
 
 internal typealias SettingsView = @Composable (SettingsViewState, (SettingsIntent) -> Unit) -> Unit
 
@@ -33,11 +35,17 @@ internal fun SettingsView(
   Scaffold(
     topBar = {
       TopAppBar(
+        modifier = Modifier.virtueSharedBounds(
+          "topBar",
+        ),
         title = {
           Text("Settings")
         },
         navigationIcon = {
           IconButton(
+            modifier = Modifier.virtueSharedElement(
+              key = "backArrow"
+            ),
             onClick = { onIntent(SettingsIntent.Close) },
           ) {
             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go back")

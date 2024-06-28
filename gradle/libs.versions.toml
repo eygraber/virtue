@@ -10,7 +10,7 @@ androidx-lifecycle = "2.8.2"
 
 atomicfu = "0.25.0"
 
-composeJetbrains = "1.6.11"
+composeJetbrains = "1.7.0-dev1703"
 
 conventions = "0.0.75"
 
@@ -18,7 +18,7 @@ detekt = "1.23.6"
 detektCompose = "0.4.4"
 detektEygraber = "1.0.11"
 
-kotlin = "2.0.0"
+kotlin = "2.0.10-RC-502"
 
 kotlinInject = "0.7.1"
 
@@ -36,7 +36,7 @@ atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
 completeKotlin = { id = "com.louiscad.complete-kotlin", version = "1.1.0" }
 conventions = { id = "com.eygraber.conventions", version.ref = "conventions" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version = "1.32.0" }
-kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [libraries]
@@ -54,6 +54,7 @@ buildscript-compose-jetbrains = { module = "org.jetbrains.compose:compose-gradle
 buildscript-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 buildscript-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "1.9.20" }
 buildscript-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+buildscript-kotlinxSerialization = { module = "org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin", version.ref = "kotlin" }
 buildscript-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.29.0" }
 
 compose-material3-windowSizeClass = "dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.5.0"

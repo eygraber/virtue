@@ -28,15 +28,9 @@ internal interface History {
 
   fun push(): Entry
   fun updateCurrent(display: String): Entry
-  fun move(delta: Int)
+  fun move(delta: Int): Change
 
   suspend fun awaitChange(): Change
 }
 
-internal fun History.moveForward() {
-  move(1)
-}
-
-internal fun History.moveBackward() {
-  move(-1)
-}
+internal fun History.moveForward(): History.Change = move(1)

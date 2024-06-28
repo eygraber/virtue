@@ -4,10 +4,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.eygraber.vice.nav.viceComposable
 import com.eygraber.vice.nav.viceDialog
-import com.eygraber.virtue.nav.DisplayableRoute
+import com.eygraber.virtue.nav.VirtueRoute
 import com.eygraber.virtue.nav.nestedGraph
-import com.eygraber.virtue.nav.virtueNavigate
-import com.eygraber.virtue.nav.virtuePopUpTo
 import com.eygraber.virtue.samples.todo.shared.about.AboutUsDestination
 import com.eygraber.virtue.samples.todo.shared.details.DetailsDestination
 import com.eygraber.virtue.samples.todo.shared.home.HomeDestination
@@ -16,17 +14,18 @@ import com.eygraber.virtue.session.VirtueNavGraphBuilder
 
 object TodoNavGraphBuilder : VirtueNavGraphBuilder<TodoSessionComponent> {
   override fun NavGraphBuilder.buildGraph(
-    displayRoute: (DisplayableRoute) -> Unit,
+    displayRoute: (VirtueRoute) -> Unit,
     sessionComponent: TodoSessionComponent,
     navController: NavHostController,
   ) {
     viceComposable<Routes.Home> { entry ->
+      println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${entry.route.display}")
       displayRoute(entry.route)
 
       HomeDestination(
-        onNavigateToCreateItem = { navController.virtueNavigate(Routes.Details.Create) },
-        onNavigateToUpdateItem = { id -> navController.virtueNavigate(Routes.Details.Update(id)) },
-        onNavigateToSettings = { navController.virtueNavigate(Routes.Settings.Home) },
+        onNavigateToCreateItem = { navController.navigate(Routes.Details.Create) },
+        onNavigateToUpdateItem = { id -> navController.navigate(Routes.Details.Update(id)) },
+        onNavigateToSettings = { navController.navigate(Routes.Settings.Home) },
         parentComponent = sessionComponent,
       )
     }
@@ -55,17 +54,13 @@ object TodoNavGraphBuilder : VirtueNavGraphBuilder<TodoSessionComponent> {
       startDestination = Routes.Settings.Home,
     ) {
       viceComposable<Routes.Settings.Home> { entry ->
+        println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${entry.route.display}")
         displayRoute(entry.route)
 
         SettingsDestination(
           onNavigateBack = { navController.popBackStack() },
           onNavigateToAboutUs = {
-            navController.virtueNavigate(Routes.Settings.AboutUs) {
-              virtuePopUpTo(Routes.Settings.Home) {
-                inclusive = true
-                saveState = true
-              }
-            }
+            navController.navigate(Routes.Settings.AboutUs)
           },
           parentComponent = sessionComponent,
         )

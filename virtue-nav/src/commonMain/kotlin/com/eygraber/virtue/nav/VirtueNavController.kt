@@ -1,12 +1,14 @@
 package com.eygraber.virtue.nav
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
-import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.Navigator
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Creates a NavHostController that handles the adding of the [ComposeNavigator] and
@@ -22,13 +24,7 @@ public expect fun rememberVirtueNavController(
   vararg navigators: Navigator<out NavDestination>,
 ): NavHostController
 
-public expect fun <T : Any> NavController.virtueNavigate(
-  route: T,
-  builder: NavOptionsBuilder.() -> Unit,
-)
-
-public expect fun <T : Any> NavController.virtueNavigate(
-  route: T,
-  navOptions: NavOptions? = null,
-  navigatorExtras: Navigator.Extras? = null,
-)
+public val NavController.currentBackstackWithoutGraphs: Flow<List<NavBackStackEntry>>
+  get() = currentBackStack.map { stackWithGraphs ->
+    stackWithGraphs.filterNot { it.destination is NavGraph }
+  }

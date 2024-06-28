@@ -1,11 +1,14 @@
 package com.eygraber.virtue.session.history
 
 import androidx.compose.runtime.saveable.Saver
+import com.eygraber.uri.Url
+import com.eygraber.virtue.nav.VirtueRoute
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.update
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.math.absoluteValue
 
 internal class TimelineHistory private constructor(
   timeline: Timeline,
@@ -77,6 +80,7 @@ internal class TimelineHistory private constructor(
     display: String,
   ): History.Entry {
     val updatedTimeline = mutateTimeline {
+      println("Timeline - Updating $current with $display")
       copy(
         entries = entries.mapIndexed { index, item ->
           if(index != current) {
@@ -94,8 +98,20 @@ internal class TimelineHistory private constructor(
     }
   }
 
-  override fun move(delta: Int) {
+  override fun move(delta: Int): History.Change {
+    var change: History.Change = History.Change.Empty
+
     mutateTimeline {
+      change = when {
+        delta < 0 -> History.Change.Pop(delta.absoluteValue)
+        delta > 0 -> History.Change.Navigate(
+          timelineDisplays
+            .slice(current + 1..current + delta)
+            .map { Url.parse("${VirtueRoute.INTERNAL_SCHEME}$it") }
+        )
+        else -> History.Change.Empty
+      }
+
       when(val moveToIndex = current + delta) {
         in 0..entries.lastIndex -> copy(
           current = moveToIndex,
@@ -104,6 +120,8 @@ internal class TimelineHistory private constructor(
         else -> this
       }
     }
+
+    return change
   }
 
   override suspend fun awaitChange(): History.Change = History.Change.Empty

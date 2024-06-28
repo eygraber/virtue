@@ -1,5 +1,15 @@
 package com.eygraber.virtue.samples.todo.shared.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -27,7 +37,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.eygraber.vice.nav.LocalSharedTransitionScopes
 import com.eygraber.virtue.samples.todo.shared.TodoItem
+import com.eygraber.virtue.session.VirtueAnimatedContentScope
+import com.eygraber.virtue.session.virtueSharedBounds
 
 internal typealias HomeView = @Composable (HomeViewState, (HomeIntent) -> Unit) -> Unit
 
@@ -40,23 +53,38 @@ internal fun HomeView(
   Scaffold(
     topBar = {
       TopAppBar(
+        modifier = Modifier.virtueSharedBounds(
+          "topBar",
+        ),
         title = {
           Text("Todo")
         },
         actions = {
-          IconButton(
-            onClick = { onIntent(HomeIntent.NavigateToSettings) },
-          ) {
-            Icon(Icons.Filled.Settings, contentDescription = "Settings")
+          VirtueAnimatedContentScope {
+            IconButton(
+              modifier = Modifier.animateEnterExit(
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut()
+              ),
+              onClick = { onIntent(HomeIntent.NavigateToSettings) },
+            ) {
+              Icon(Icons.Filled.Settings, contentDescription = "Settings")
+            }
           }
         },
       )
     },
     floatingActionButton = {
-      FloatingActionButton(
-        onClick = { onIntent(HomeIntent.AddItem) },
-      ) {
-        Icon(Icons.Filled.Add, contentDescription = "Add new item")
+      VirtueAnimatedContentScope {
+        FloatingActionButton(
+          modifier = Modifier.animateEnterExit(
+            enter = scaleIn(),
+            exit = fadeOut()
+          ),
+          onClick = { onIntent(HomeIntent.AddItem) },
+        ) {
+          Icon(Icons.Filled.Add, contentDescription = "Add new item")
+        }
       }
     },
   ) { contentPadding ->

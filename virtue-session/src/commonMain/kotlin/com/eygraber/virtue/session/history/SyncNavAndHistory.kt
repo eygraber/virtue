@@ -1,9 +1,9 @@
 package com.eygraber.virtue.session.history
 
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph
 import com.eygraber.uri.Url
-import com.eygraber.virtue.nav.virtueNavigate
+import com.eygraber.virtue.nav.VirtueRoute
+import com.eygraber.virtue.nav.currentBackstackWithoutGraphs
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
@@ -11,16 +11,14 @@ import kotlinx.coroutines.flow.runningFold
 
 internal suspend fun NavController.syncWithHistory(
   history: History,
-  urlToRoute: (Url) -> Any,
+  deepLinkMapper: (Url) -> VirtueRoute?,
   debug: Boolean = false,
 ) {
-  val backStackChanges = currentBackStack.map { stackWithGraphs ->
-    stackWithGraphs.filterNot { it.destination is NavGraph }
-  }.map { stack ->
+  val backStackWithoutGraphs = currentBackstackWithoutGraphs.map { stack ->
     stack.map { it.id }
   }
 
-  backStackChanges.withPrevious().collectLatest { (previousBackstack, currentBackstack) ->
+  backStackWithoutGraphs.withPrevious().collectLatest { (previousBackstack, currentBackstack) ->
     val lastEqualIndex = findLastEqualIndex(previousBackstack, currentBackstack)
     if(debug) println("prev=${previousBackstack.size} new=${currentBackstack.size}, lastEqualIndex=$lastEqualIndex")
     if(history.isEnabled) {
@@ -56,9 +54,8 @@ internal suspend fun NavController.syncWithHistory(
       is History.Change.Navigate -> {
         history.isEnabled = false
         change.urlRoutes.forEach { urlRoute ->
-          virtueNavigate(urlToRoute(urlRoute))
-        }.also {
-          if(debug) println("Navigate(${change.urlRoutes.size})")
+          if(debug) println("Navigating forward to $urlRoute")
+          deepLinkMapper(urlRoute)?.let(::navigate)
         }
       }
 

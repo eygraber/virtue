@@ -17,6 +17,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.eygraber.virtue.session.virtueSharedBounds
+import com.eygraber.virtue.session.virtueSharedElement
 
 typealias AboutUsView = @Composable (AboutUsViewState, (AboutUsIntent) -> Unit) -> Unit
 
@@ -29,11 +31,17 @@ internal fun AboutUsView(
   Scaffold(
     topBar = {
       TopAppBar(
+        modifier = Modifier.virtueSharedBounds(
+          "topBar",
+        ),
         title = {
           Text("About Us")
         },
         navigationIcon = {
           IconButton(
+            modifier = Modifier.virtueSharedElement(
+              key = "backArrow"
+            ),
             onClick = { onIntent(AboutUsIntent.Close) },
           ) {
             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go back")

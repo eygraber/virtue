@@ -1,10 +1,10 @@
 package com.eygraber.virtue.samples.todo.shared
 
 import com.eygraber.uri.Uri
-import com.eygraber.virtue.nav.DisplayableRoute
+import com.eygraber.virtue.nav.VirtueRoute
 import kotlinx.serialization.Serializable
 
-sealed interface Routes : DisplayableRoute {
+sealed interface Routes : VirtueRoute {
   @Serializable
   data object Home : Routes {
     override val display: String = "/todo"
@@ -43,7 +43,7 @@ sealed interface Routes : DisplayableRoute {
       "/todo/update" -> Details.Update(uri.getQueryParameter("id") ?: "-1")
       "/", "/todo" -> Home
       "/settings/about-us" -> Settings.AboutUs
-      "/settings" -> Settings.Home
+      "/settings" -> Settings
       else -> Home
     }
   }

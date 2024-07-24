@@ -6,7 +6,7 @@ android-sdk-target = "34"
 android-sdk-min = "28"
 
 androidx-activity = "1.9.0"
-androidx-lifecycle = "2.8.3"
+androidx-lifecycle = "2.8.4"
 
 atomicfu = "0.25.0"
 

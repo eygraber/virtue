@@ -11,6 +11,13 @@ pluginManagement {
       }
     }
 
+    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev") {
+      content {
+        includeGroup("org.jetbrains.kotlin")
+        includeGroup("org.jetbrains.kotlin.plugin.serialization")
+      }
+    }
+
     mavenCentral()
 
     maven("https://oss.sonatype.org/content/repositories/snapshots") {
@@ -25,6 +32,12 @@ pluginManagement {
       }
     }
 
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") {
+      content {
+        includeGroupByRegex("org\\.jetbrains.*")
+      }
+    }
+
     gradlePluginPortal()
   }
 }
@@ -36,11 +49,16 @@ dependencyResolutionManagement {
   // repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 
   repositories {
+    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev") {
+      content {
+        includeGroup("org.jetbrains.kotlin")
+      }
+    }
     addCommonRepositories(
       includeMavenCentral = true,
       includeMavenCentralSnapshots = true,
       includeGoogle = true,
-      includeJetbrainsComposeDev = false,
+      includeJetbrainsComposeDev = true,
     )
   }
 }
@@ -48,13 +66,13 @@ dependencyResolutionManagement {
 rootProject.name = "virtue"
 
 plugins {
-  id("com.eygraber.conventions.settings") version "0.0.75"
-  id("com.gradle.develocity") version "3.17.5"
+  id("com.eygraber.conventions.settings") version "0.0.76"
+  id("com.gradle.develocity") version "3.17.6"
 }
 
 include(":samples:todo:androidApp")
 include(":samples:todo:desktopApp")
-include(":samples:todo:ios-framework")
+// include(":samples:todo:ios-framework")
 include(":samples:todo:shared")
 include(":samples:todo:webJsApp")
 include(":samples:todo:webWasmApp")

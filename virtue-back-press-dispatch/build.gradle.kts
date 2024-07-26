@@ -37,3 +37,12 @@ kotlin {
     }
   }
 }
+
+configurations.all {
+  resolutionStrategy.eachDependency {
+    if(requested.group == "org.jetbrains.kotlinx" && requested.name == "atomicfu") {
+      useVersion(libs.versions.atomicfuForCmp.get())
+      because("https://youtrack.jetbrains.com/issue/CMP-5831")
+    }
+  }
+}

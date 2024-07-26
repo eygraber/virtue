@@ -8,7 +8,7 @@ import com.eygraber.virtue.session.VirtueDestinationComponent
 import me.tatarka.inject.annotations.Provides
 
 abstract class TodoDestination<R, I, C, S> : VirtueDestination<R, I, C, ViceEffects, S, TodoSessionComponent>()
-  where C : ViceCompositor<I, S>
+  where I : Any, C : ViceCompositor<I, S>, S : Any
 
 interface TodoDestinationComponent<R, I, C, S> :
   VirtueDestinationComponent<R, I, C, ViceEffects, S, TodoSessionComponent>

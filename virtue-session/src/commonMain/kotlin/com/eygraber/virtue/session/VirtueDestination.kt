@@ -6,8 +6,10 @@ import com.eygraber.vice.nav.ViceDestination
 import me.tatarka.inject.annotations.Provides
 
 public abstract class VirtueDestination<R, I, C, E, S, out ParentComponent> : ViceDestination<I, C, E, S>()
-  where C : ViceCompositor<I, S>,
-        E : ViceEffects {
+  where I : Any,
+        C : ViceCompositor<I, S>,
+        E : ViceEffects,
+        S : Any {
   protected abstract val parentComponent: ParentComponent
   protected abstract val component: VirtueDestinationComponent<R, I, C, E, S, ParentComponent>
 

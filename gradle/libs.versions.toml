@@ -19,7 +19,7 @@ detekt = "1.23.6"
 detektCompose = "0.4.8"
 detektEygraber = "1.0.11"
 
-kotlin = "2.0.10-RC2"
+kotlin = "2.0.10"
 
 kotlinInject = "0.7.1"
 

@@ -26,11 +26,9 @@ jobs:
           java-version-file: .ci-java-version
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: wrapper
-          gradle-home-cache-cleanup: true
-          validate-wrappers: true
 
       - name: Run assemble task
         run: ./gradlew assemble -x assembleRelease -x jsBrowserProductionWebpack -x wasmJsBrowserProductionWebpack
@@ -46,11 +44,9 @@ jobs:
           java-version-file: .ci-java-version
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: wrapper
-          gradle-home-cache-cleanup: true
-          validate-wrappers: true
 
       - name: Run detekt
         run: ./gradlew detektAll
@@ -68,11 +64,9 @@ jobs:
           java-version-file: .ci-java-version
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: wrapper
-          gradle-home-cache-cleanup: true
-          validate-wrappers: true
 
       - name: Run detekt for apple targets
         run: ./gradlew detektAppleMain detektAppleTest
@@ -88,11 +82,9 @@ jobs:
           java-version-file: .ci-java-version
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: wrapper
-          gradle-home-cache-cleanup: true
-          validate-wrappers: true
 
       - name: Run dependency analysis check
         run: ./gradlew buildHealth
@@ -116,11 +108,9 @@ jobs:
           java-version-file: .ci-java-version
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: wrapper
-          gradle-home-cache-cleanup: true
-          validate-wrappers: true
 
       - name: Run Android lint
         run: ./gradlew lintRelease
@@ -137,11 +127,9 @@ jobs:
           java-version-file: .ci-java-version
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: wrapper
-          gradle-home-cache-cleanup: true
-          validate-wrappers: true
 
       - name: Run tests
         run: ./gradlew allTests

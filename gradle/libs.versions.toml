@@ -1,8 +1,8 @@
 [versions]
 android-plugin = "8.5.1"
 
-android-sdk-compile = "34"
-android-sdk-target = "34"
+android-sdk-compile = "35"
+android-sdk-target = "35"
 android-sdk-min = "28"
 
 androidx-activity = "1.9.1"
@@ -45,7 +45,7 @@ android-desugar = "com.android.tools:desugar_jdk_libs:2.0.4"
 
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
-androidx-annotations = "androidx.annotation:annotation:1.8.1"
+androidx-annotations = "androidx.annotation:annotation:1.8.2"
 androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common", version.ref = "androidx-lifecycle" }
 
 buildscript-android = { module = "com.android.tools.build:gradle", version.ref = "android-plugin" }

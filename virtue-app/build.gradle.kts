@@ -29,7 +29,6 @@ kotlin {
       dependencies {
         api(projects.virtueConfig)
         api(projects.virtueDiComponents)
-        api(projects.virtueNav)
         api(projects.virtueSession)
         implementation(projects.virtueTheme)
         implementation(projects.virtueSessionState)

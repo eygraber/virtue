@@ -13,14 +13,29 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 
+@Suppress("ModifierMissing")
 @Composable
-public expect fun VirtueNavHost(
+public fun VirtueNavHost(
   navController: NavHostController,
   startDestination: Any,
   params: VirtueNavHostParams,
   builder: NavGraphBuilder.() -> Unit,
-)
+) {
+  NavHost(
+    navController = navController,
+    startDestination = startDestination,
+    modifier = params.modifier,
+    contentAlignment = params.contentAlignment,
+    enterTransition = params.enterTransition,
+    exitTransition = params.exitTransition,
+    popEnterTransition = params.popEnterTransition,
+    popExitTransition = params.popExitTransition,
+    sizeTransform = params.sizeTransform,
+    builder = builder,
+  )
+}
 
 public data class VirtueNavHostParams(
   val modifier: Modifier = Modifier,

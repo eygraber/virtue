@@ -11,24 +11,26 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.eygraber.virtue.back.press.dispatch.OnBackPressDispatcherProvider
 import com.eygraber.virtue.back.press.dispatch.WithBackPressDispatching
 import com.eygraber.virtue.config.DesktopVirtueConfig
 import com.eygraber.virtue.di.components.VirtueAppComponent
 import com.eygraber.virtue.di.components.VirtuePlatformComponent
 import com.eygraber.virtue.di.components.VirtuePlatformSessionComponent
 import com.eygraber.virtue.di.components.create
-import com.eygraber.virtue.session.GenericVirtueSessionComponent
 import com.eygraber.virtue.session.VirtueSession
+import com.eygraber.virtue.session.VirtueSessionComponent
 import com.eygraber.virtue.session.VirtueSessionParams
+import com.eygraber.virtue.session.nav.VirtueRoute
 import com.eygraber.virtue.theme.ThemeSetting
 import java.awt.Dimension
 
-public fun <A : VirtueAppComponent, S : GenericVirtueSessionComponent> virtueApplication(
+public fun <A : VirtueAppComponent, S : VirtueSessionComponent, VR : VirtueRoute> virtueApplication(
   appComponentFactory: (VirtuePlatformComponent, DesktopVirtueConfig) -> A,
   initialSessionComponentFactory: (A, VirtuePlatformSessionComponent) -> S,
   config: DesktopVirtueConfig,
-  sessionParams: VirtueSession.Params<S>,
-  configureInitialSessionParams: (VirtueSessionParams) -> VirtueSessionParams = { it },
+  sessionParams: VirtueSession.Params<S, VR>,
+  configureInitialSessionParams: (VirtueSessionParams<VR>, S) -> VirtueSessionParams<VR> = { params, _ -> params },
   onAllSessionsClosed: ApplicationScope.() -> Unit = { exitApplication() },
   defaultThemeSetting: ThemeSetting = ThemeSetting.System,
 ) {
@@ -42,12 +44,13 @@ public fun <A : VirtueAppComponent, S : GenericVirtueSessionComponent> virtueApp
   val initialSessionComponent = initialSessionComponentFactory(
     appComponent,
     virtuePlatformSessionComponent,
-  ) as GenericVirtueSessionComponent
+  )
 
   val initialSessionParams = configureInitialSessionParams(
     VirtueSessionParams(
       title = config.appName,
     ),
+    initialSessionComponent,
   )
 
   val sessionManager = initialSessionComponent.sessionManager.apply {
@@ -93,13 +96,13 @@ public fun <A : VirtueAppComponent, S : GenericVirtueSessionComponent> virtueApp
           )
 
           WithBackPressDispatching(
-            onBackPressedDispatcher = sessionComponent.onBackPressedDispatcher,
+            onBackPressedDispatcher = (sessionComponent as OnBackPressDispatcherProvider).onBackPressedDispatcher,
           ) {
             @Suppress("UNCHECKED_CAST")
             sessionComponent.session.SessionUi(
               sessionComponent = sessionComponent as S,
               params = sessionParams.copy(
-                startDestination = params.startDestination ?: sessionParams.startDestination,
+                initialRoute = params.initialRoute as? VR ?: sessionParams.initialRoute,
               ),
             )
           }
@@ -112,7 +115,7 @@ public fun <A : VirtueAppComponent, S : GenericVirtueSessionComponent> virtueApp
 @Composable
 private fun WindowMinSizeEffect(
   window: ComposeWindow,
-  params: VirtueSessionParams,
+  params: VirtueSessionParams<*>,
 ) {
   val minimumWindowSize = when(val minSize = params.minWindowSize) {
     null -> null

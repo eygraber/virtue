@@ -1,39 +1,32 @@
 package com.eygraber.virtue.samples.todo.shared
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
+import androidx.navigation.navigation
 import com.eygraber.vice.nav.viceComposable
 import com.eygraber.vice.nav.viceDialog
-import com.eygraber.virtue.nav.DisplayableRoute
-import com.eygraber.virtue.nav.nestedGraph
-import com.eygraber.virtue.nav.virtueNavigate
-import com.eygraber.virtue.nav.virtuePopUpTo
 import com.eygraber.virtue.samples.todo.shared.about.AboutUsDestination
 import com.eygraber.virtue.samples.todo.shared.details.DetailsDestination
 import com.eygraber.virtue.samples.todo.shared.home.HomeDestination
 import com.eygraber.virtue.samples.todo.shared.settings.SettingsDestination
 import com.eygraber.virtue.session.VirtueNavGraphBuilder
+import com.eygraber.virtue.session.nav.VirtueNavController
 
-object TodoNavGraphBuilder : VirtueNavGraphBuilder<TodoSessionComponent> {
+object TodoNavGraphBuilder : VirtueNavGraphBuilder<TodoSessionComponent, Routes> {
   override fun NavGraphBuilder.buildGraph(
-    displayRoute: (DisplayableRoute) -> Unit,
     sessionComponent: TodoSessionComponent,
-    navController: NavHostController,
+    initialRoute: Routes,
+    navController: VirtueNavController<Routes>,
   ) {
-    viceComposable<Routes.Home> { entry ->
-      displayRoute(entry.route)
-
+    viceComposable<Routes.Home> {
       HomeDestination(
-        onNavigateToCreateItem = { navController.virtueNavigate(Routes.Details.Create) },
-        onNavigateToUpdateItem = { id -> navController.virtueNavigate(Routes.Details.Update(id)) },
-        onNavigateToSettings = { navController.virtueNavigate(Routes.Settings.Home) },
+        onNavigateToCreateItem = { navController.navigate(Routes.Details.Create) },
+        onNavigateToUpdateItem = { id -> navController.navigate(Routes.Details.Update(id)) },
+        onNavigateToSettings = { navController.navigate(Routes.Settings.Home) },
         parentComponent = sessionComponent,
       )
     }
 
-    viceDialog<Routes.Details.Create> { entry ->
-      displayRoute(entry.route)
-
+    viceDialog<Routes.Details.Create> {
       DetailsDestination(
         op = Routes.Details.Create,
         onNavigateBack = { navController.popBackStack() },
@@ -42,8 +35,6 @@ object TodoNavGraphBuilder : VirtueNavGraphBuilder<TodoSessionComponent> {
     }
 
     viceDialog<Routes.Details.Update> { entry ->
-      displayRoute(entry.route)
-
       DetailsDestination(
         op = entry.route,
         onNavigateBack = { navController.popBackStack() },
@@ -51,31 +42,22 @@ object TodoNavGraphBuilder : VirtueNavGraphBuilder<TodoSessionComponent> {
       )
     }
 
-    nestedGraph<Routes.Settings>(
-      startDestination = Routes.Settings.Home,
+    navigation<Routes.Settings>(
+      startDestination = if(initialRoute is Routes.Settings.Nested) initialRoute else Routes.Settings.Home,
     ) {
-      viceComposable<Routes.Settings.Home> { entry ->
-        displayRoute(entry.route)
-
+      viceComposable<Routes.Settings.Home> {
         SettingsDestination(
-          onNavigateBack = { navController.popBackStack() },
+          onNavigateBack = { navController.navigateUp() },
           onNavigateToAboutUs = {
-            navController.virtueNavigate(Routes.Settings.AboutUs) {
-              virtuePopUpTo(Routes.Settings.Home) {
-                inclusive = true
-                saveState = true
-              }
-            }
+            navController.navigate(Routes.Settings.AboutUs)
           },
           parentComponent = sessionComponent,
         )
       }
 
-      viceComposable<Routes.Settings.AboutUs> { entry ->
-        displayRoute(entry.route)
-
+      viceComposable<Routes.Settings.AboutUs> {
         AboutUsDestination(
-          onNavigateBack = { navController.popBackStack() },
+          onNavigateBack = { navController.navigateUp() },
           parentComponent = sessionComponent,
         )
       }

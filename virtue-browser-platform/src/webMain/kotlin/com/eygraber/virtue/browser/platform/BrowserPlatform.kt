@@ -6,7 +6,7 @@ public interface BrowserPlatform {
   public val currentHistoryEntryIndex: Int
   public val currentOrigin: String
 
-  public fun pushHistoryState(index: Int)
+  public fun pushHistoryState(index: Int, display: String)
   public fun replaceHistoryState(index: Int, display: String)
   public fun go(delta: Int)
 

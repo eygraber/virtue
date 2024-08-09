@@ -1,39 +1,49 @@
 package com.eygraber.virtue.samples.todo.shared
 
 import com.eygraber.uri.Uri
-import com.eygraber.virtue.nav.DisplayableRoute
+import com.eygraber.virtue.session.nav.NestedVirtueRoute
+import com.eygraber.virtue.session.nav.VirtueRoute
 import kotlinx.serialization.Serializable
 
-sealed interface Routes : DisplayableRoute {
+@Serializable
+sealed interface Routes : VirtueRoute {
   @Serializable
   data object Home : Routes {
-    override val display: String = "/todo"
+    override fun display(): String = "/todo"
   }
 
+  @Serializable
   sealed interface Details : Routes {
     @Serializable
     data object Create : Details {
-      override val display: String = "/todo/create"
+      override fun display(): String = "/todo/create"
     }
 
     @Serializable
     data class Update(val id: String) : Details {
-      override val display: String = "/todo/update?id=$id"
+      override fun display(): String = "/todo/update?id=$id"
     }
   }
 
   @Serializable
   data object Settings : Routes {
-    override val display: String = "/settings"
+    override fun display(): String = "/settings"
+    override fun up(): VirtueRoute = Routes.Home
+
+    interface Nested : NestedVirtueRoute
 
     @Serializable
-    data object Home : Routes {
-      override val display: String = "/settings"
+    data object Home : Routes, Nested {
+      override fun display(): String = "/settings"
+      override fun up(): VirtueRoute = Routes.Home
+      override fun parent(): VirtueRoute = Settings
     }
 
     @Serializable
-    data object AboutUs : Routes {
-      override val display: String = "/settings/about-us"
+    data object AboutUs : Routes, Nested {
+      override fun display(): String = "/settings/about-us"
+      override fun up(): VirtueRoute = Home
+      override fun parent(): VirtueRoute = Settings
     }
   }
 
@@ -44,7 +54,7 @@ sealed interface Routes : DisplayableRoute {
       "/", "/todo" -> Home
       "/settings/about-us" -> Settings.AboutUs
       "/settings" -> Settings.Home
-      else -> Home
+      else -> null
     }
   }
 }

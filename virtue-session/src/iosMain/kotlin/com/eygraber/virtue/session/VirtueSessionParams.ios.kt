@@ -1,3 +1,5 @@
 package com.eygraber.virtue.session
 
-public actual class VirtueSessionParams
+import com.eygraber.virtue.session.nav.VirtueRoute
+
+public actual class VirtueSessionParams<VR : VirtueRoute>

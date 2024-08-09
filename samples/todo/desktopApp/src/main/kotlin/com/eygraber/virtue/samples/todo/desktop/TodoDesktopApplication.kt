@@ -31,7 +31,7 @@ fun main() = virtueApplication(
     },
   ),
   sessionParams = TodoSessionParams,
-  configureInitialSessionParams = { params ->
+  configureInitialSessionParams = { params, _ ->
     params.copy(
       minWindowSize = DpSize(400.dp, 400.dp),
     )

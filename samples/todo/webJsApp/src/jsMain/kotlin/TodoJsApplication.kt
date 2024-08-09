@@ -1,6 +1,7 @@
 import com.eygraber.virtue.app.virtueApplication
 import com.eygraber.virtue.config.JsVirtueConfig
 import com.eygraber.virtue.samples.todo.shared.APP_NAME
+import com.eygraber.virtue.samples.todo.shared.Routes
 import com.eygraber.virtue.samples.todo.shared.TodoAppComponent
 import com.eygraber.virtue.samples.todo.shared.TodoSessionComponent
 import com.eygraber.virtue.samples.todo.shared.TodoSessionParams
@@ -23,4 +24,7 @@ fun main() = virtueApplication(
     appName = APP_NAME,
   ),
   sessionParams = TodoSessionParams,
+  initialRouteProvider = { uri ->
+    Routes.fromUri(uri) ?: TodoSessionParams.initialRoute
+  },
 )

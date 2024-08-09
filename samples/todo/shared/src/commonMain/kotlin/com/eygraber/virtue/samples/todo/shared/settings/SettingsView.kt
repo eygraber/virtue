@@ -1,5 +1,6 @@
 package com.eygraber.virtue.samples.todo.shared.settings
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,10 +22,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.eygraber.vice.nav.LocalAnimatedVisibilityScope
+import com.eygraber.vice.nav.LocalSharedTransitionScope
+import com.eygraber.vice.nav.rememberSharedContentState
+import com.eygraber.vice.nav.sharedBounds
+import com.eygraber.vice.nav.sharedElement
 
 internal typealias SettingsView = @Composable (SettingsViewState, (SettingsIntent) -> Unit) -> Unit
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun SettingsView(
   @Suppress("UNUSED_PARAMETER") state: SettingsViewState,
@@ -33,11 +39,21 @@ internal fun SettingsView(
   Scaffold(
     topBar = {
       TopAppBar(
+        modifier = Modifier.sharedBounds(
+          sharedTransitionScope = LocalSharedTransitionScope.current,
+          animatedVisibilityScope = LocalAnimatedVisibilityScope.current,
+          sharedContentState = rememberSharedContentState("topBar"),
+        ),
         title = {
           Text("Settings")
         },
         navigationIcon = {
           IconButton(
+            modifier = Modifier.sharedElement(
+              sharedTransitionScope = LocalSharedTransitionScope.current,
+              animatedVisibilityScope = LocalAnimatedVisibilityScope.current,
+              state = rememberSharedContentState("backArrow"),
+            ),
             onClick = { onIntent(SettingsIntent.Close) },
           ) {
             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go back")

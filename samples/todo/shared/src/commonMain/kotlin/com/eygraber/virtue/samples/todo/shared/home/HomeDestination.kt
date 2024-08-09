@@ -8,6 +8,8 @@ import com.eygraber.virtue.samples.todo.shared.TodoSessionComponent
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.KmpComponentCreate
 import me.tatarka.inject.annotations.Provides
+import kotlin.experimental.ExperimentalObjCRefinement
+import kotlin.native.HiddenFromObjC
 
 @DestinationSingleton
 class HomeNavigator(
@@ -16,6 +18,8 @@ class HomeNavigator(
   val onNavigateToSettings: () -> Unit,
 )
 
+@OptIn(ExperimentalObjCRefinement::class)
+@HiddenFromObjC
 class HomeDestination(
   onNavigateToCreateItem: () -> Unit,
   onNavigateToUpdateItem: (String) -> Unit,

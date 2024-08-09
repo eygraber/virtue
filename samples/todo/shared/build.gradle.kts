@@ -32,7 +32,7 @@ kotlin {
         implementation(compose.material3)
 
         implementation(libs.kotlinx.coroutines.core)
-        implementation(libs.kotlinx.serialization.json)
+        api(libs.kotlinx.serialization.json)
       }
     }
   }

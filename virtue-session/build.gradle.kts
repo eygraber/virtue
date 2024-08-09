@@ -37,7 +37,7 @@ kotlin {
         api(projects.virtueBackPressDispatch)
         api(projects.virtueDiComponents)
         api(projects.virtueDiScopes)
-        api(projects.virtueNav)
+        implementation(projects.virtuePlatform)
         api(projects.virtueSessionState)
         api(projects.virtueTheme)
         implementation(projects.virtueThemeCompose)

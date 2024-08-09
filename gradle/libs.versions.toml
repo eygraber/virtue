@@ -30,7 +30,7 @@ ksp = "2.0.10-1.0.24"
 
 ktlint = "1.3.1"
 
-vice = "0.0.5-SNAPSHOT"
+vice = "0.0.5"
 
 [plugins]
 atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }

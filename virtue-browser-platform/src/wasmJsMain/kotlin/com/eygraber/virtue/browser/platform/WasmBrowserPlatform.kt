@@ -27,12 +27,12 @@ public class WasmBrowserPlatform(
   override val currentHistoryEntryIndex: Int get() = browserHistory.state?.unsafeCast<WasmHistoryState>()?.index ?: 0
   override val currentOrigin: String get() = browserLocation.origin
 
-  override fun pushHistoryState(index: Int) {
-    browserHistory.pushState(wasmHistoryState(index), "", "")
+  override fun pushHistoryState(index: Int, display: String) {
+    browserHistory.pushState(wasmHistoryState(index), "", display)
   }
 
   override fun replaceHistoryState(index: Int, display: String) {
-    browserHistory.pushState(wasmHistoryState(index), "", display)
+    browserHistory.replaceState(wasmHistoryState(index), "", display)
   }
 
   override fun go(delta: Int) {

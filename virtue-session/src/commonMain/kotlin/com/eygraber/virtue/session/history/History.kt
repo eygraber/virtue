@@ -1,42 +1,30 @@
 package com.eygraber.virtue.session.history
 
-import com.eygraber.uri.Url
-import kotlinx.serialization.Serializable
+import com.eygraber.virtue.session.nav.VirtueRoute
 
 @PublishedApi
-internal interface History {
-  @Serializable
-  data class Entry(
+internal interface History<VR : VirtueRoute> {
+  data class Entry<VR : VirtueRoute>(
     val index: Int,
-    val display: String = "",
+    val route: VR,
   )
 
   sealed interface Change {
     data object Empty : Change
-    data class Navigate(val urlRoutes: List<Url>) : Change
+    data class Navigate(val range: IntRange) : Change
     data class Pop(val count: Int) : Change
   }
 
-  var isEnabled: Boolean
+  val currentEntry: Entry<VR>
 
-  val currentEntry: Entry?
+  val canMoveBack: Boolean
+  val canMoveForward: Boolean
 
-  val canGoBack: Boolean
-  val canGoForward: Boolean
+  operator fun get(index: Int): Entry<VR>
 
-  fun initialize()
+  fun push(route: VR): Entry<VR>
+  fun move(delta: Int): Change
 
-  fun push(): Entry
-  fun updateCurrent(display: String): Entry
-  fun move(delta: Int)
-
+  suspend fun awaitChangeNoOp()
   suspend fun awaitChange(): Change
-}
-
-internal fun History.moveForward() {
-  move(1)
-}
-
-internal fun History.moveBackward() {
-  move(-1)
 }

@@ -11,13 +11,6 @@ pluginManagement {
       }
     }
 
-    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev") {
-      content {
-        includeGroup("org.jetbrains.kotlin")
-        includeGroup("org.jetbrains.kotlin.plugin.serialization")
-      }
-    }
-
     mavenCentral()
 
     maven("https://oss.sonatype.org/content/repositories/snapshots") {
@@ -49,11 +42,6 @@ dependencyResolutionManagement {
   // repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 
   repositories {
-    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev") {
-      content {
-        includeGroup("org.jetbrains.kotlin")
-      }
-    }
     addCommonRepositories(
       includeMavenCentral = true,
       includeMavenCentralSnapshots = true,
@@ -72,18 +60,18 @@ plugins {
 
 include(":samples:todo:androidApp")
 include(":samples:todo:desktopApp")
-// include(":samples:todo:ios-framework")
+include(":samples:todo:ios-framework")
 include(":samples:todo:shared")
 include(":samples:todo:webJsApp")
 include(":samples:todo:webWasmApp")
 include(":virtue-android")
 include(":virtue-app")
+include(":virtue-app-compat")
 include(":virtue-back-press-dispatch")
 include(":virtue-browser-platform")
 include(":virtue-config")
 include(":virtue-di-components")
 include(":virtue-di-scopes")
-include(":virtue-nav")
 include(":virtue-platform")
 include(":virtue-session")
 include(":virtue-session-state")

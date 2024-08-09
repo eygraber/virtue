@@ -13,6 +13,7 @@ buildscript {
     classpath(libs.buildscript.detekt)
     classpath(libs.buildscript.dokka)
     classpath(libs.buildscript.kotlin)
+    classpath(libs.buildscript.kotlinxSerialization)
     classpath(libs.buildscript.publish)
   }
 }
@@ -44,6 +45,7 @@ gradleConventionsDefaults {
     jvmTargetVersion = JvmTarget.JVM_11
     explicitApiMode = ExplicitApiMode.Strict
     freeCompilerArgs = setOf(KotlinFreeCompilerArg.AllowExpectActualClasses)
+    allWarningsAsErrors = true
   }
 }
 
@@ -55,7 +57,7 @@ gradleConventionsKmpDefaults {
 
   targets(
     KmpTarget.Android,
-    // KmpTarget.Ios,
+    KmpTarget.Ios,
     KmpTarget.Js,
     KmpTarget.Jvm,
     KmpTarget.WasmJs,

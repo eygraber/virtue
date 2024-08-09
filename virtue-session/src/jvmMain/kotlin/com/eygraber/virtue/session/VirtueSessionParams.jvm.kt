@@ -4,9 +4,10 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.window.WindowState
+import com.eygraber.virtue.session.nav.VirtueRoute
 
 @Suppress("BooleanPropertyNaming")
-public actual data class VirtueSessionParams(
+public actual data class VirtueSessionParams<VR : VirtueRoute>(
   val windowState: WindowState = WindowState(),
   val minWindowSize: DpSize? = null,
   val visible: Boolean = true,
@@ -20,5 +21,5 @@ public actual data class VirtueSessionParams(
   val alwaysOnTop: Boolean = false,
   val onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
   val onKeyEvent: (KeyEvent) -> Boolean = { false },
-  val startDestination: Any? = null,
+  val initialRoute: VR? = null,
 )

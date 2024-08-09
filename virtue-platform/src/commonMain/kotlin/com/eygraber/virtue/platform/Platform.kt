@@ -22,3 +22,6 @@ public sealed interface Platform {
 }
 
 public expect val CurrentPlatform: Platform
+
+public val Platform.isMacos: Boolean get() = this is Platform.Jvm && os == Os.Mac
+public val Platform.isMobile: Boolean get() = this is Platform.Android || this is Platform.Ios

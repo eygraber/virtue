@@ -1,29 +1,29 @@
 package com.eygraber.virtue.session
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import com.eygraber.uri.Url
+import com.eygraber.vice.nav.LocalSharedTransitionScope
 import com.eygraber.virtue.back.press.dispatch.BackHandler
 import com.eygraber.virtue.back.press.dispatch.PlatformNavigationHandler
 import com.eygraber.virtue.di.scopes.SessionSingleton
-import com.eygraber.virtue.nav.VirtueDeepLink
-import com.eygraber.virtue.nav.rememberVirtueNavController
-import com.eygraber.virtue.nav.virtueNavigate
-import com.eygraber.virtue.session.history.History
-import com.eygraber.virtue.session.history.moveForward
-import com.eygraber.virtue.session.history.rememberHistory
-import com.eygraber.virtue.session.history.syncWithHistory
+import com.eygraber.virtue.session.nav.InternalVirtueNavController
+import com.eygraber.virtue.session.nav.VirtueDeepLink
+import com.eygraber.virtue.session.nav.VirtueNavController
+import com.eygraber.virtue.session.nav.VirtueRoute
+import com.eygraber.virtue.session.nav.currentBackstackWithoutGraphs
+import com.eygraber.virtue.session.nav.rememberVirtueNavController
 import com.eygraber.virtue.theme.ThemeSettings
 import com.eygraber.virtue.theme.compose.isApplicationInDarkTheme
 import kotlinx.coroutines.flow.Flow
@@ -31,32 +31,34 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.jvm.JvmOverloads
+import kotlin.reflect.KClass
 
 @SessionSingleton
 @Inject
 public class VirtueSession(
   private val themeSettings: ThemeSettings,
-  private val deepLinkMapper: VirtueDeepLinkMapper,
 ) {
-  public class Params<T : GenericVirtueSessionComponent>(
-    public val startDestination: Any,
-    public val navGraphBuilder: VirtueNavGraphBuilder<T>,
-    public val deepLinksFlow: MutableSharedFlow<VirtueDeepLink> = MutableSharedFlow(),
+  public class Params<T : VirtueSessionComponent, VR : VirtueRoute>(
+    public val initialRoute: VR,
+    public val routeClass: KClass<VR>,
+    public val navGraphBuilder: VirtueNavGraphBuilder<T, VR>,
+    public val deepLinksFlow: MutableSharedFlow<VirtueDeepLink<VR>> = MutableSharedFlow(),
     public val darkColorScheme: ColorScheme = androidx.compose.material3.darkColorScheme(),
     public val lightColorScheme: ColorScheme = androidx.compose.material3.lightColorScheme(),
     public val navHostParams: VirtueNavHostParams = VirtueNavHostParams(),
   ) {
     @JvmOverloads
     public fun copy(
-      startDestination: Any = this.startDestination,
-      navGraphBuilder: VirtueNavGraphBuilder<T> = this.navGraphBuilder,
-      deepLinksFlow: MutableSharedFlow<VirtueDeepLink> = this.deepLinksFlow,
+      initialRoute: VR = this.initialRoute,
+      navGraphBuilder: VirtueNavGraphBuilder<T, VR> = this.navGraphBuilder,
+      deepLinksFlow: MutableSharedFlow<VirtueDeepLink<VR>> = this.deepLinksFlow,
       darkColorScheme: ColorScheme = this.darkColorScheme,
       lightColorScheme: ColorScheme = this.lightColorScheme,
       navHostParams: VirtueNavHostParams = this.navHostParams,
-    ): Params<T> = Params(
-      startDestination = startDestination,
+    ): Params<T, VR> = Params(
+      initialRoute = initialRoute,
       navGraphBuilder = navGraphBuilder,
+      routeClass = routeClass,
       deepLinksFlow = deepLinksFlow,
       darkColorScheme = darkColorScheme,
       lightColorScheme = lightColorScheme,
@@ -66,27 +68,21 @@ public class VirtueSession(
 
   private var isBackHandlerEnabled by mutableStateOf(false)
 
+  @OptIn(ExperimentalSharedTransitionApi::class)
   @Suppress("ModifierMissing")
   @Composable
-  public fun <T : GenericVirtueSessionComponent> SessionUi(
+  public fun <T : VirtueSessionComponent, VR : VirtueRoute> SessionUi(
     sessionComponent: T,
-    params: Params<T>,
+    params: Params<T, VR>,
   ) {
-    val history = rememberHistory()
-    val navController = rememberVirtueNavController()
+    val navController = rememberVirtueNavController(params.routeClass, params.initialRoute)
 
-    HistoryInitEffect(history)
     BackstackChangeEffect(navController)
 
-    SyncHistoryAndBackstackEffect(
-      navController,
-      history,
-      deepLinkMapper::mapToRoute,
-    )
+    SyncPlatformHistory(navController)
 
     HandleDeepLinks(
       navController,
-      deepLinkMapper,
       params.deepLinksFlow,
     )
 
@@ -103,23 +99,29 @@ public class VirtueSession(
         else -> params.lightColorScheme
       },
     ) {
-      Box {
-        PlatformNavigation(history)
+      PlatformNavigation(
+        navController = navController,
+      )
 
-        Box(
-          modifier = Modifier.fillMaxSize(),
-        ) {
-          VirtueNavHost(
-            navController = navController,
-            startDestination = params.startDestination,
-            params = params.navHostParams,
+      Box(
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
+      ) {
+        SharedTransitionLayout {
+          CompositionLocalProvider(
+            LocalSharedTransitionScope provides this,
           ) {
-            with(params.navGraphBuilder) {
-              buildGraph(
-                displayRoute = { history.updateCurrent(it.display) },
-                sessionComponent = sessionComponent,
-                navController = navController,
-              )
+            VirtueNavHost(
+              navController = navController.navController,
+              startDestination = params.initialRoute,
+              params = params.navHostParams,
+            ) {
+              with(params.navGraphBuilder) {
+                buildGraph(
+                  sessionComponent = sessionComponent,
+                  initialRoute = params.initialRoute,
+                  navController = navController,
+                )
+              }
             }
           }
         }
@@ -128,55 +130,39 @@ public class VirtueSession(
   }
 
   @Composable
-  private fun HistoryInitEffect(history: History) {
-    DisposableEffect(history) {
-      history.initialize()
-
-      onDispose {}
-    }
-  }
-
-  @Composable
-  private fun BackstackChangeEffect(navController: NavController) {
+  private fun BackstackChangeEffect(navController: VirtueNavController<*>) {
     LaunchedEffect(navController) {
       launch {
-        navController.currentBackStack.collect {
-          // need to account for the root graph in the size
-          isBackHandlerEnabled = it.size > 2
+        navController.currentBackstackWithoutGraphs.collect {
+          isBackHandlerEnabled = it.size > 1
         }
       }
     }
   }
 
   @Composable
-  private fun SyncHistoryAndBackstackEffect(
-    navController: NavController,
-    history: History,
-    deepLinkToRoute: (Url) -> Any,
+  private fun <VR : VirtueRoute> SyncPlatformHistory(
+    navController: InternalVirtueNavController<VR>,
   ) {
-    val updatedUrlToRoute by rememberUpdatedState(deepLinkToRoute)
-    LaunchedEffect(history, navController) {
+    LaunchedEffect(navController) {
       launch {
-        navController.syncWithHistory(
-          history = history,
-          urlToRoute = updatedUrlToRoute,
-          debug = true,
-        )
+        with(navController) {
+          syncWithPlatformHistory()
+        }
       }
     }
   }
 
   @Composable
-  private fun HandleDeepLinks(
-    navController: NavController,
-    deepLinkMapper: VirtueDeepLinkMapper,
-    deepLinksFlow: Flow<VirtueDeepLink>,
+  private fun <VR : VirtueRoute> HandleDeepLinks(
+    navController: VirtueNavController<VR>,
+    deepLinksFlow: Flow<VirtueDeepLink<VR>>,
   ) {
     LaunchedEffect(deepLinksFlow) {
       launch {
         deepLinksFlow.collect { deepLink ->
-          navController.virtueNavigate(
-            route = deepLinkMapper.mapToRoute(deepLink.uri),
+          navController.navigate(
+            route = deepLink.route,
             navOptions = deepLink.navOptions,
             navigatorExtras = deepLink.navigatorExtras,
           )
@@ -186,12 +172,12 @@ public class VirtueSession(
   }
 
   @Composable
-  private fun PlatformNavigation(history: History) {
+  private fun PlatformNavigation(
+    navController: VirtueNavController<*>,
+  ) {
     PlatformNavigationHandler(
       onForwardPress = {
-        if(history.canGoForward) {
-          history.moveForward()
-        }
+        navController.moveForward()
       },
     )
   }

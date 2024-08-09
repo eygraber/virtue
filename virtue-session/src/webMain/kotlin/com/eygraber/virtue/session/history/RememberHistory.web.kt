@@ -10,10 +10,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import com.eygraber.virtue.back.press.dispatch.LocalOnBackPressedDispatcher
 import com.eygraber.virtue.back.press.dispatch.OnBackPressedDispatcher
 import com.eygraber.virtue.browser.platform.BrowserPlatform
+import com.eygraber.virtue.session.nav.VirtueRoute
+import kotlin.reflect.KClass
 
 private const val SAVE_KEY = "com.eygraber.virtue.history.History"
 
-private class HistorySaveableStateRegistry(
+private class HistorySaveableStateRegistry<VR : VirtueRoute>(
+  private val routeClass: KClass<VR>,
   private val browserPlatform: BrowserPlatform,
   private val backPressDispatcher: OnBackPressedDispatcher,
 ) : SaveableStateRegistry by SaveableStateRegistry(
@@ -22,6 +25,7 @@ private class HistorySaveableStateRegistry(
       SAVE_KEY to listOf(
         with(
           WebHistory.Saver(
+            routeClass = routeClass,
             browserPlatform = browserPlatform,
             backPressDispatcher = backPressDispatcher,
           ),
@@ -44,7 +48,10 @@ private class HistorySaveableStateRegistry(
 }
 
 @Composable
-internal actual fun rememberHistory(): History {
+internal actual fun <VR : VirtueRoute> rememberHistory(
+  initialRoute: VR,
+  routeClass: KClass<VR>,
+): History<VR> {
   val backPressDispatcher = checkNotNull(LocalOnBackPressedDispatcher.current) {
     "No OnBackPressedDispatcher was provided via LocalOnBackPressedDispatcher"
   }
@@ -53,18 +60,20 @@ internal actual fun rememberHistory(): History {
 
   val saveableStateRegistry = remember {
     HistorySaveableStateRegistry(
+      routeClass = routeClass,
       browserPlatform = browserPlatform,
       backPressDispatcher = backPressDispatcher,
     )
   }
 
-  var history: History? = null
+  var history: History<VR>? = null
 
   CompositionLocalProvider(
     LocalSaveableStateRegistry provides saveableStateRegistry,
   ) {
     history = rememberSaveable(
       saver = WebHistory.Saver(
+        routeClass = routeClass,
         browserPlatform = browserPlatform,
         backPressDispatcher = backPressDispatcher,
       ),
@@ -72,7 +81,7 @@ internal actual fun rememberHistory(): History {
     ) {
       WebHistory(
         browserPlatform = browserPlatform,
-        history = TimelineHistory(),
+        history = TimelineHistory(initialRoute),
         backPressDispatcher = backPressDispatcher,
       )
     }

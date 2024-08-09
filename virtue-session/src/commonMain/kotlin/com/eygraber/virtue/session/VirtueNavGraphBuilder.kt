@@ -1,13 +1,12 @@
 package com.eygraber.virtue.session
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import com.eygraber.virtue.nav.DisplayableRoute
+import com.eygraber.virtue.session.nav.VirtueNavController
+import com.eygraber.virtue.session.nav.VirtueRoute
 
-public interface VirtueNavGraphBuilder<T : GenericVirtueSessionComponent> {
+public interface VirtueNavGraphBuilder<T : VirtueSessionComponent, VR : VirtueRoute> {
   public fun NavGraphBuilder.buildGraph(
-    displayRoute: (DisplayableRoute) -> Unit,
     sessionComponent: T,
-    navController: NavHostController,
+    navController: VirtueNavController<VR>,
   )
 }

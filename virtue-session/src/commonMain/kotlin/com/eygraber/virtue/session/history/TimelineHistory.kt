@@ -1,51 +1,54 @@
 package com.eygraber.virtue.session.history
 
 import androidx.compose.runtime.saveable.Saver
+import com.eygraber.virtue.session.nav.VirtueRoute
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.update
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
+import kotlin.math.absoluteValue
+import kotlin.reflect.KClass
 
-internal class TimelineHistory private constructor(
-  timeline: Timeline,
-) : History {
-  @Serializable
-  private data class Timeline(
-    val entries: List<History.Entry>,
+internal class TimelineHistory<VR : VirtueRoute> private constructor(
+  timeline: Timeline<VR>,
+) : History<VR> {
+  private data class Timeline<VR : VirtueRoute>(
+    val entries: List<History.Entry<VR>>,
     val current: Int,
-  ) : List<History.Entry> by entries {
-    val currentItem get() = if(current == -1) null else entries[current]
+  ) : List<History.Entry<VR>> by entries {
+    val currentItem get() = entries[current]
 
-    inline fun mutate(mutate: Timeline.() -> Timeline): Timeline = this.mutate()
+    inline fun mutate(mutate: Timeline<VR>.() -> Timeline<VR>): Timeline<VR> = this.mutate()
   }
 
-  constructor() : this(
-    Timeline(entries = listOf(History.Entry(0)), current = 0),
+  constructor(initialRoute: VR) : this(
+    Timeline(entries = listOf(History.Entry(0, initialRoute)), current = 0),
   )
 
   private val timeline = atomic(timeline)
 
-  internal val timelineDisplays: List<String> get() = timeline.value.entries.map { it.display }
+  override val currentEntry: History.Entry<VR> get() = timeline.value.currentItem
 
-  override var isEnabled: Boolean by atomic(false)
+  override val canMoveBack: Boolean get() = timeline.value.current > 0
+  override val canMoveForward: Boolean get() = timeline.value.current < timeline.value.lastIndex
 
-  override val currentEntry: History.Entry? get() = timeline.value.currentItem
+  override fun get(index: Int): History.Entry<VR> = timeline.value.entries[index]
 
-  override val canGoBack: Boolean get() = timeline.value.current > 0
-  override val canGoForward: Boolean get() = timeline.value.current < timeline.value.lastIndex
-
-  override fun initialize() {}
-
-  override fun push(): History.Entry {
+  override fun push(route: VR): History.Entry<VR> {
     val newTimeline = mutateTimeline {
       val newCurrent = current + 1
 
       val newEntry = History.Entry(
         index = current + 1,
+        route = route,
       )
 
-      if(current == -1 || current == entries.lastIndex) {
+      if(current == entries.lastIndex) {
         copy(
           entries = entries + newEntry,
           current = newCurrent,
@@ -68,34 +71,19 @@ internal class TimelineHistory private constructor(
       }
     }
 
-    return requireNotNull(newTimeline.currentItem) {
-      "currentItem shouldn't be able to be null"
-    }
+    return newTimeline.currentItem
   }
 
-  override fun updateCurrent(
-    display: String,
-  ): History.Entry {
-    val updatedTimeline = mutateTimeline {
-      copy(
-        entries = entries.mapIndexed { index, item ->
-          if(index != current) {
-            item
-          }
-          else {
-            item.copy(display = display)
-          }
-        },
-      )
-    }
+  override fun move(delta: Int): History.Change {
+    var change: History.Change = History.Change.Empty
 
-    return requireNotNull(updatedTimeline.currentItem) {
-      "currentItem shouldn't be able to be null"
-    }
-  }
-
-  override fun move(delta: Int) {
     mutateTimeline {
+      change = when {
+        delta < 0 -> History.Change.Pop(delta.absoluteValue)
+        delta > 0 -> History.Change.Navigate(current + 1..current + delta)
+        else -> History.Change.Empty
+      }
+
       when(val moveToIndex = current + delta) {
         in 0..entries.lastIndex -> copy(
           current = moveToIndex,
@@ -104,13 +92,17 @@ internal class TimelineHistory private constructor(
         else -> this
       }
     }
+
+    return change
   }
 
-  override suspend fun awaitChange(): History.Change = History.Change.Empty
+  override suspend fun awaitChangeNoOp() {}
+
+  override suspend fun awaitChange(): History.Change = suspendCancellableCoroutine {}
 
   override fun toString(): String = timeline.value.toString()
 
-  private inline fun mutateTimeline(mutate: Timeline.() -> Timeline): Timeline {
+  private inline fun mutateTimeline(mutate: Timeline<VR>.() -> Timeline<VR>): Timeline<VR> {
     timeline.update { prev ->
       prev.mutate(mutate)
     }
@@ -119,17 +111,52 @@ internal class TimelineHistory private constructor(
   }
 
   internal companion object {
-    fun Saver() = Saver<TimelineHistory, Any>(
-      save = { Json.encodeToString(it.timeline.value) },
+    @Serializable
+    private data class SerializedTimeline(
+      val current: Int,
+      val n: Int,
+      val serializedRoutes: String,
+    )
+
+    @OptIn(InternalSerializationApi::class)
+    fun <VR : VirtueRoute> Saver(
+      routeClass: KClass<VR>,
+    ) = Saver<TimelineHistory<VR>, String>(
+      save = { history ->
+        val timeline = history.timeline.value
+        val current = timeline.current
+        val n = timeline.entries.size
+        val serializedRoutes = Json.encodeToString(
+          serializer = ListSerializer(routeClass.serializer()),
+          value = timeline.entries.map { it.route },
+        )
+
+        Json.encodeToString(
+          SerializedTimeline(
+            current = current,
+            n = n,
+            serializedRoutes = serializedRoutes,
+          ),
+        )
+      },
       restore = { encodedTimeline ->
-        if(encodedTimeline is String) {
-          TimelineHistory(
-            Json.decodeFromString<Timeline>(encodedTimeline),
-          )
-        }
-        else {
-          null
-        }
+        val serializedTimeline = Json.decodeFromString<SerializedTimeline>(encodedTimeline)
+        val routes = Json.decodeFromString(
+          ListSerializer(routeClass.serializer()),
+          serializedTimeline.serializedRoutes,
+        )
+
+        TimelineHistory(
+          Timeline(
+            entries = List(serializedTimeline.n) { index ->
+              History.Entry(
+                index = index,
+                route = routes[index],
+              )
+            },
+            current = serializedTimeline.current,
+          ),
+        )
       },
     )
   }

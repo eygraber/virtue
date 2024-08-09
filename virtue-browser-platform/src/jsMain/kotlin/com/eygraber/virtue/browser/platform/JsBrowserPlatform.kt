@@ -1,6 +1,5 @@
 package com.eygraber.virtue.browser.platform
 
-import com.eygraber.virtue.browser.platform.BrowserPlatform.Companion.BAD_POPSTATE
 import kotlinx.browser.window
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.w3c.dom.PopStateEvent
@@ -27,12 +26,12 @@ public class JsBrowserPlatform(
   override val currentHistoryEntryIndex: Int get() = browserHistory.state?.unsafeCast<JsHistoryState>()?.index ?: 0
   override val currentOrigin: String get() = browserLocation.origin
 
-  override fun pushHistoryState(index: Int) {
-    browserHistory.pushState(jsHistoryState(index), "", "")
+  override fun pushHistoryState(index: Int, display: String) {
+    browserHistory.pushState(jsHistoryState(index), "", display)
   }
 
   override fun replaceHistoryState(index: Int, display: String) {
-    browserHistory.pushState(jsHistoryState(index), "", display)
+    browserHistory.replaceState(jsHistoryState(index), "", display)
   }
 
   override fun go(delta: Int) {
@@ -53,7 +52,7 @@ public class JsBrowserPlatform(
         if(listener != null && cont.isActive) {
           browserWindow.removeEventListener("popstate", listener)
           val state = (event as PopStateEvent).state?.unsafeCast<JsHistoryState>()
-          cont.resume(state?.index ?: BAD_POPSTATE)
+          cont.resume(state?.index ?: 0)
         }
       }
 

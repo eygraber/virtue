@@ -1,8 +1,9 @@
 package com.eygraber.virtue.app
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.CanvasBasedWindow
-import com.eygraber.uri.Url
+import com.eygraber.uri.Uri
 import com.eygraber.virtue.back.press.dispatch.OnBackPressDispatcherProvider
 import com.eygraber.virtue.back.press.dispatch.WithBackPressDispatching
 import com.eygraber.virtue.config.WasmVirtueConfig
@@ -11,17 +12,19 @@ import com.eygraber.virtue.di.components.VirtuePlatformComponent
 import com.eygraber.virtue.di.components.VirtuePlatformSessionComponent
 import com.eygraber.virtue.di.components.VirtueWebPlatformComponent
 import com.eygraber.virtue.di.components.create
-import com.eygraber.virtue.session.GenericVirtueSessionComponent
 import com.eygraber.virtue.session.VirtueSession
+import com.eygraber.virtue.session.VirtueSessionComponent
+import com.eygraber.virtue.session.nav.VirtueRoute
 import com.eygraber.virtue.theme.ThemeSetting
 
 @OptIn(ExperimentalComposeUiApi::class)
-public fun <A : VirtueAppComponent, S : GenericVirtueSessionComponent> virtueApplication(
+public fun <A : VirtueAppComponent, S : VirtueSessionComponent, VR : VirtueRoute> virtueApplication(
   appComponentFactory: (VirtuePlatformComponent, WasmVirtueConfig) -> A,
   sessionComponentFactory: (A, VirtuePlatformSessionComponent) -> S,
   config: WasmVirtueConfig,
-  sessionParams: VirtueSession.Params<S>,
+  sessionParams: VirtueSession.Params<S, VR>,
   defaultThemeSetting: ThemeSetting = ThemeSetting.System,
+  initialRouteProvider: (Uri) -> VR = { sessionParams.initialRoute },
 ) {
   val webPlatformComponent = VirtueWebPlatformComponent.create()
 
@@ -39,11 +42,17 @@ public fun <A : VirtueAppComponent, S : GenericVirtueSessionComponent> virtueApp
     virtuePlatformSessionComponent,
   )
 
+  val initialRoute = initialRouteProvider(Uri.parse(webPlatformComponent.browserLocation.href))
+
   CanvasBasedWindow(config.title) {
     InitializationEffect(
       themeSettings = appComponent.themeSettings,
       defaultThemeSetting = defaultThemeSetting,
     )
+
+    LaunchedEffect(Unit) {
+      webPlatformComponent.browserHistory.replaceState(null, "", initialRoute.display())
+    }
 
     WithBackPressDispatching(
       onBackPressedDispatcher = (sessionComponent as OnBackPressDispatcherProvider).onBackPressedDispatcher,
@@ -51,9 +60,7 @@ public fun <A : VirtueAppComponent, S : GenericVirtueSessionComponent> virtueApp
       sessionComponent.session.SessionUi(
         sessionComponent = sessionComponent,
         params = sessionParams.copy(
-          startDestination = sessionComponent.deepLinkMapper.mapToRoute(
-            Url.parse(webPlatformComponent.browserLocation.href),
-          ),
+          initialRoute = initialRoute,
         ),
       )
     }

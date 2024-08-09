@@ -8,15 +8,16 @@ import com.eygraber.virtue.di.components.VirtueAppComponent
 import com.eygraber.virtue.di.components.VirtuePlatformComponent
 import com.eygraber.virtue.di.components.VirtuePlatformSessionComponent
 import com.eygraber.virtue.di.components.createKmp
-import com.eygraber.virtue.session.GenericVirtueSessionComponent
 import com.eygraber.virtue.session.VirtueSession
+import com.eygraber.virtue.session.VirtueSessionComponent
+import com.eygraber.virtue.session.nav.VirtueRoute
 import com.eygraber.virtue.theme.ThemeSetting
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import platform.UIKit.UIViewController
 
-public abstract class VirtueApplication<A : VirtueAppComponent, S : GenericVirtueSessionComponent>(
+public abstract class VirtueApplication<A : VirtueAppComponent, S : VirtueSessionComponent, VR : VirtueRoute>(
   private val config: IosVirtueConfig,
   private val defaultThemeSetting: ThemeSetting = ThemeSetting.System,
 ) {
@@ -47,7 +48,7 @@ public abstract class VirtueApplication<A : VirtueAppComponent, S : GenericVirtu
     virtuePlatformSessionComponent: VirtuePlatformSessionComponent,
   ): S
 
-  protected abstract val sessionParams: VirtueSession.Params<S>
+  protected abstract val sessionParams: VirtueSession.Params<S, VR>
 
   public abstract fun createViewController(): UIViewController
 

@@ -13,6 +13,7 @@ android {
 kotlin {
   kmpTargets(
     KmpTarget.Android,
+    ignoreDefaultTargets = true,
     project = project,
   )
 

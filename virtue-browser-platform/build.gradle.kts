@@ -8,6 +8,7 @@ kotlin {
   kmpTargets(
     KmpTarget.Js,
     KmpTarget.WasmJs,
+    ignoreDefaultTargets = true,
     project = project,
   )
 

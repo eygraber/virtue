@@ -10,6 +10,7 @@ plugins {
 kotlin {
   kmpTargets(
     KmpTarget.Ios,
+    ignoreDefaultTargets = true,
     project = project,
   )
 

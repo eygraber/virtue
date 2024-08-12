@@ -3,7 +3,7 @@ android-plugin = "8.5.2"
 
 android-sdk-compile = "35"
 android-sdk-target = "35"
-android-sdk-min = "28"
+android-sdk-min = "26"
 
 androidx-activity = "1.9.1"
 androidx-lifecycle = "2.8.4"

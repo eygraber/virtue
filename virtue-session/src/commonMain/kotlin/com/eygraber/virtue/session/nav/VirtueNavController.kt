@@ -287,23 +287,28 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
     val lastEqualIndex = findLastEqualIndex(before, after)
 
     val delta = lastEqualIndex + 1 - before.size
-    if(delta < 0) {
-      isPlatformHistorySyncEnabled = false
-      history.move(delta)
+    if(delta == -1 && !history.canMoveBack && pushedRoute != null) {
+      history.replaceFirst(pushedRoute)
     }
-
-    if(pushedRoute != null) {
+    else {
       if(delta < 0) {
-        // need to await the history event because History
-        // doesn't seem to like a move followed immediately by a push
-        scope.launch {
-          history.awaitChangeNoOp()
+        isPlatformHistorySyncEnabled = false
+        history.move(delta)
+      }
 
+      if(pushedRoute != null) {
+        if(delta < 0) {
+          // need to await the history event because History
+          // doesn't seem to like a move followed immediately by a push
+          scope.launch {
+            history.awaitChangeNoOp()
+
+            history.push(pushedRoute)
+          }
+        }
+        else {
           history.push(pushedRoute)
         }
-      }
-      else {
-        history.push(pushedRoute)
       }
     }
 

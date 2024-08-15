@@ -26,10 +26,14 @@ internal class WebHistory<VR : VirtueRoute>(
       browserPlatform.pushHistoryState(index, route.display())
     }
 
-  override fun move(delta: Int): History.Change {
+  override fun replaceFirst(route: VR) {
+    history.replaceFirst(route)
+    browserPlatform.replaceHistoryState(0, route.display())
+  }
+
+  override fun move(delta: Int) {
     history.move(delta)
     browserPlatform.go(delta)
-    return History.Change.Empty
   }
 
   override suspend fun awaitChangeNoOp() {

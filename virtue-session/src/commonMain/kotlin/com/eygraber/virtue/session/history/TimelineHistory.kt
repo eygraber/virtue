@@ -11,7 +11,6 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
-import kotlin.math.absoluteValue
 import kotlin.reflect.KClass
 
 internal class TimelineHistory<VR : VirtueRoute> private constructor(
@@ -74,16 +73,16 @@ internal class TimelineHistory<VR : VirtueRoute> private constructor(
     return newTimeline.currentItem
   }
 
-  override fun move(delta: Int): History.Change {
-    var change: History.Change = History.Change.Empty
-
+  override fun replaceFirst(route: VR) {
     mutateTimeline {
-      change = when {
-        delta < 0 -> History.Change.Pop(delta.absoluteValue)
-        delta > 0 -> History.Change.Navigate(current + 1..current + delta)
-        else -> History.Change.Empty
-      }
+      copy(
+        entries = listOf(History.Entry(0, route)),
+      )
+    }
+  }
 
+  override fun move(delta: Int) {
+    mutateTimeline {
       when(val moveToIndex = current + delta) {
         in 0..entries.lastIndex -> copy(
           current = moveToIndex,
@@ -92,8 +91,6 @@ internal class TimelineHistory<VR : VirtueRoute> private constructor(
         else -> this
       }
     }
-
-    return change
   }
 
   override suspend fun awaitChangeNoOp() {}

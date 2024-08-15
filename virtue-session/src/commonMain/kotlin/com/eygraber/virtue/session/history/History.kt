@@ -23,7 +23,8 @@ internal interface History<VR : VirtueRoute> {
   operator fun get(index: Int): Entry<VR>
 
   fun push(route: VR): Entry<VR>
-  fun move(delta: Int): Change
+  fun replaceFirst(route: VR)
+  fun move(delta: Int)
 
   suspend fun awaitChangeNoOp()
   suspend fun awaitChange(): Change

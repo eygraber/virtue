@@ -21,7 +21,7 @@ object TodoNavGraphBuilder : VirtueNavGraphBuilder<TodoSessionComponent, Routes>
       HomeDestination(
         onNavigateToCreateItem = { navController.navigate(Routes.Details.Create) },
         onNavigateToUpdateItem = { id -> navController.navigate(Routes.Details.Update(id)) },
-        onNavigateToSettings = { navController.navigate(Routes.Settings.Home) },
+        onNavigateToSettings = { navController.navigate(Routes.Settings.Settings) },
         parentComponent = sessionComponent,
       )
     }
@@ -43,9 +43,9 @@ object TodoNavGraphBuilder : VirtueNavGraphBuilder<TodoSessionComponent, Routes>
     }
 
     navigation<Routes.Settings>(
-      startDestination = if(initialRoute is Routes.Settings.Nested) initialRoute else Routes.Settings.Home,
+      startDestination = if(initialRoute is Routes.Settings.Nested) initialRoute else Routes.Settings.Settings,
     ) {
-      viceComposable<Routes.Settings.Home> {
+      viceComposable<Routes.Settings.Settings> {
         SettingsDestination(
           onNavigateBack = { navController.navigateUp() },
           onNavigateToAboutUs = {

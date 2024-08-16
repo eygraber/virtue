@@ -15,6 +15,7 @@ public actual fun BrowserPlatform(): BrowserPlatform =
     browserHistory = window.history,
     browserLocation = window.location,
     browserSessionStorage = window.sessionStorage,
+    browserDocument = window.document,
     browserWindow = window,
   )
 
@@ -22,10 +23,17 @@ public class WasmBrowserPlatform(
   private val browserHistory: org.w3c.dom.History,
   private val browserLocation: org.w3c.dom.Location,
   private val browserSessionStorage: Storage,
+  private val browserDocument: org.w3c.dom.Document,
   private val browserWindow: org.w3c.dom.Window,
 ) : BrowserPlatform {
   override val currentHistoryEntryIndex: Int get() = browserHistory.state?.unsafeCast<WasmHistoryState>()?.index ?: 0
   override val currentOrigin: String get() = browserLocation.origin
+
+  override var documentTitle: String
+    get() = browserDocument.title
+    set(value) {
+      browserDocument.title = value
+    }
 
   override fun pushHistoryState(index: Int, display: String) {
     browserHistory.pushState(wasmHistoryState(index), "", display)

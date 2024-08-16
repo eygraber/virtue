@@ -15,6 +15,7 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.Navigator
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
 import com.eygraber.virtue.platform.CurrentPlatform
 import com.eygraber.virtue.platform.Platform
 import com.eygraber.virtue.session.history.History
@@ -22,10 +23,10 @@ import com.eygraber.virtue.session.history.rememberHistory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 import kotlin.math.absoluteValue
 import kotlin.reflect.KClass
 
@@ -152,8 +153,6 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
   override val canGoForward: Boolean
     get() = history.canMoveForward
 
-  @PublishedApi internal var isPlatformHistorySyncEnabled: Boolean = true
-
   override fun navigate(route: VR) {
     syncWithHistory(pushedRoute = route) {
       navController.navigate(route)
@@ -161,13 +160,11 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
   }
 
   override fun navigate(route: VR, builder: NavOptionsBuilder.() -> Unit) {
-    syncWithHistory(pushedRoute = route) {
-      navController.navigate(route, builder)
-    }
+    navigate(route, navOptions(builder))
   }
 
   override fun navigate(route: VR, navOptions: NavOptions?, navigatorExtras: Navigator.Extras?) {
-    syncWithHistory(pushedRoute = route) {
+    syncWithHistory(pushedRoute = route, navOptions = navOptions) {
       navController.navigate(route, navOptions, navigatorExtras)
     }
   }
@@ -210,7 +207,7 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
   override fun moveForward(): Boolean =
     history.canMoveForward.also { canMoveForward ->
       if(canMoveForward) {
-        isPlatformHistorySyncEnabled = false
+        history.isIgnoringPlatformChanges = true
         val currentIndex = history.currentEntry.index
         navController.navigate(history[currentIndex + 1].route)
         history.move(1)
@@ -236,14 +233,7 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
   override fun CoroutineScope.syncWithPlatformHistory() {
     launch {
       while(isActive) {
-        val change = history.awaitChange()
-
-        if(!isPlatformHistorySyncEnabled) {
-          isPlatformHistorySyncEnabled = true
-          continue
-        }
-
-        when(change) {
+        when(val change = history.awaitChange()) {
           is History.Change.Navigate ->
             change.range.map { history[it].route }.forEach { route ->
               navController.navigate(route)
@@ -254,10 +244,19 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
               navController.popBackStack()
             }
 
+          is History.Change.PendingAction -> launch {
+            change.pending()
+          }
+
           History.Change.Empty -> {}
         }
+      }
+    }
 
-        yield()
+    // this is here out of convenience, not because it belongs here
+    launch {
+      history.currentEntryFlow.collectLatest { currentEntry ->
+        currentEntry.route.title()?.let(history::updateTitle)
       }
     }
   }
@@ -279,8 +278,10 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
   @PublishedApi
   internal inline fun <R> syncWithHistory(
     pushedRoute: VR? = null,
+    navOptions: NavOptions? = null,
     op: () -> R,
   ): R {
+    val isSingleTop = navOptions?.shouldLaunchSingleTop() == true
     val before = navController.currentBackstackWithoutGraphs
     val ret = op()
     val after = navController.currentBackstackWithoutGraphs
@@ -292,22 +293,25 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
     }
     else {
       if(delta < 0) {
-        isPlatformHistorySyncEnabled = false
+        history.isIgnoringPlatformChanges = true
         history.move(delta)
       }
 
       if(pushedRoute != null) {
-        if(delta < 0) {
+        scope.launch {
           // need to await the history event because History
           // doesn't seem to like a move followed immediately by a push
-          scope.launch {
+          if(delta < 0) {
             history.awaitChangeNoOp()
+          }
 
+          val isPushRequired = !isSingleTop || history.currentEntry.route != pushedRoute
+          if(isPushRequired) {
             history.push(pushedRoute)
           }
-        }
-        else {
-          history.push(pushedRoute)
+          else {
+            history.clearForwardNavigation()
+          }
         }
       }
     }

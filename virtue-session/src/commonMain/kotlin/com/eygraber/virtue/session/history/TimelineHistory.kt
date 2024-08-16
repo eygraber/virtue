@@ -4,6 +4,8 @@ import androidx.compose.runtime.saveable.Saver
 import com.eygraber.virtue.session.nav.VirtueRoute
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.update
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.Serializable
@@ -33,8 +35,13 @@ internal class TimelineHistory<VR : VirtueRoute> private constructor(
 
   override val currentEntry: History.Entry<VR> get() = timeline.value.currentItem
 
+  private val mutableCurrentEntryFlow = MutableStateFlow(currentEntry)
+  override val currentEntryFlow: Flow<History.Entry<VR>> = mutableCurrentEntryFlow
+
   override val canMoveBack: Boolean get() = timeline.value.current > 0
   override val canMoveForward: Boolean get() = timeline.value.current < timeline.value.lastIndex
+
+  override var isIgnoringPlatformChanges: Boolean = false
 
   override fun get(index: Int): History.Entry<VR> = timeline.value.entries[index]
 
@@ -73,6 +80,15 @@ internal class TimelineHistory<VR : VirtueRoute> private constructor(
     return newTimeline.currentItem
   }
 
+  override suspend fun clearForwardNavigation() {
+    mutateTimeline {
+      copy(
+        entries = entries.take(current + 1),
+        current = current,
+      )
+    }
+  }
+
   override fun replaceFirst(route: VR) {
     mutateTimeline {
       copy(
@@ -93,6 +109,8 @@ internal class TimelineHistory<VR : VirtueRoute> private constructor(
     }
   }
 
+  override fun updateTitle(title: String) {}
+
   override suspend fun awaitChangeNoOp() {}
 
   override suspend fun awaitChange(): History.Change = suspendCancellableCoroutine {}
@@ -104,7 +122,9 @@ internal class TimelineHistory<VR : VirtueRoute> private constructor(
       prev.mutate(mutate)
     }
 
-    return timeline.value
+    return timeline.value.also {
+      mutableCurrentEntryFlow.value = it.currentItem
+    }
   }
 
   internal companion object {

@@ -79,16 +79,21 @@ public interface VirtueNavController<in VR : VirtueRoute> {
     navigatorExtras: Navigator.Extras? = null,
   )
 
-  public fun navigateUp(): Boolean
+  public fun navigateUp(
+    clearForwardNavigation: Boolean = false,
+  ): Boolean
 
   public fun moveForward(): Boolean
 
-  public fun popBackStack(): Boolean
+  public fun popBackStack(
+    clearForwardNavigation: Boolean = false,
+  ): Boolean
 
   public fun popBackStack(
     route: VR,
     inclusive: Boolean,
     saveState: Boolean = false,
+    clearForwardNavigation: Boolean = false,
   ): Boolean
 
   public fun clearBackStack(route: VR): Boolean
@@ -169,7 +174,9 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
     }
   }
 
-  override fun navigateUp(): Boolean {
+  override fun navigateUp(
+    clearForwardNavigation: Boolean,
+  ): Boolean {
     val currentIndex = history.currentEntry.index
     val currentRoute = history.currentEntry.route
 
@@ -178,7 +185,9 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
     val upRoute = upRoutes.firstOrNull()
 
     return if(previousRoute != null && upRoute == previousRoute) {
-      popBackStack()
+      popBackStack(
+        clearForwardNavigation = clearForwardNavigation,
+      )
     }
     else if(upRoute != null) {
       when(CurrentPlatform) {
@@ -214,13 +223,20 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
       }
     }
 
-  override fun popBackStack(): Boolean =
-    syncWithHistory {
+  override fun popBackStack(
+    clearForwardNavigation: Boolean,
+  ): Boolean =
+    syncWithHistory(clearForwardNavigation = clearForwardNavigation) {
       navController.popBackStack()
     }
 
-  override fun popBackStack(route: VR, inclusive: Boolean, saveState: Boolean): Boolean =
-    syncWithHistory {
+  override fun popBackStack(
+    route: VR,
+    inclusive: Boolean,
+    saveState: Boolean,
+    clearForwardNavigation: Boolean,
+  ): Boolean =
+    syncWithHistory(clearForwardNavigation = clearForwardNavigation) {
       navController.popBackStack(route, inclusive = inclusive, saveState = saveState)
     }
 
@@ -279,6 +295,7 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
   internal inline fun <R> syncWithHistory(
     pushedRoute: VR? = null,
     navOptions: NavOptions? = null,
+    clearForwardNavigation: Boolean = false,
     op: () -> R,
   ): R {
     val isSingleTop = navOptions?.shouldLaunchSingleTop() == true
@@ -297,8 +314,8 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
         history.move(delta)
       }
 
-      if(pushedRoute != null) {
-        scope.launch {
+      scope.launch {
+        if(pushedRoute != null) {
           // need to await the history event because History
           // doesn't seem to like a move followed immediately by a push
           if(delta < 0) {
@@ -312,6 +329,15 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
           else {
             history.clearForwardNavigation()
           }
+        }
+        else if(clearForwardNavigation) {
+          // need to await the history event because History
+          // doesn't seem to like a move followed immediately by a push
+          if(delta < 0) {
+            history.awaitChangeNoOp()
+          }
+
+          history.clearForwardNavigation()
         }
       }
     }

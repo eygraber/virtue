@@ -31,6 +31,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.math.absoluteValue
 import kotlin.reflect.KClass
 
@@ -297,6 +299,8 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
 
   @PublishedApi internal var waitForFloatingWindowJob: Job? = null
 
+  @PublishedApi internal val historyMutex: Mutex = Mutex()
+
   @PublishedApi
   internal inline fun <R> syncWithHistory(
     pushedRoute: VR? = null,
@@ -315,40 +319,42 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
 
     val isCurrentAFloatingWindow = before.last().destination is FloatingWindow
 
-    val delta = lastEqualIndex + 1 - before.size
-    if(delta == -1 && !history.canMoveBack && pushedRoute != null) {
-      history.replaceFirst(pushedRoute)
-    }
-    else {
-      if(delta < 0) {
-        history.isIgnoringPlatformChanges = true
-        history.move(delta)
-      }
-
-      scope.launch {
-        if(pushedRoute != null) {
-          // need to await the history event because History
-          // doesn't seem to like a move followed immediately by a push
+    scope.launch {
+      historyMutex.withLock {
+        val delta = lastEqualIndex + 1 - before.size
+        if(delta == -1 && !history.canMoveBack && pushedRoute != null) {
+          history.replaceFirst(pushedRoute)
+        }
+        else {
           if(delta < 0) {
-            history.awaitChangeNoOp()
+            history.isIgnoringPlatformChanges = true
+            history.move(delta)
           }
 
-          val isPushRequired = !isSingleTop || history.currentEntry.route != pushedRoute
-          if(isPushRequired) {
-            history.push(pushedRoute)
+          if(pushedRoute != null) {
+            // need to await the history event because History
+            // doesn't seem to like a move followed immediately by a push
+            if(delta < 0) {
+              history.awaitChangeNoOp()
+            }
+
+            val isPushRequired = !isSingleTop || history.currentEntry.route != pushedRoute
+            if(isPushRequired) {
+              history.push(pushedRoute)
+            }
+            else {
+              history.clearForwardNavigation()
+            }
           }
-          else {
+          else if(clearForwardNavigation || isCurrentAFloatingWindow) {
+            // need to await the history event because History
+            // doesn't seem to like a move followed immediately by a push
+            if(delta < 0) {
+              history.awaitChangeNoOp()
+            }
+
             history.clearForwardNavigation()
           }
-        }
-        else if(clearForwardNavigation || isCurrentAFloatingWindow) {
-          // need to await the history event because History
-          // doesn't seem to like a move followed immediately by a push
-          if(delta < 0) {
-            history.awaitChangeNoOp()
-          }
-
-          history.clearForwardNavigation()
         }
       }
     }
@@ -356,15 +362,17 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
     if(after.last().destination is FloatingWindow) {
       waitForFloatingWindowJob = scope.launch {
         navController.currentBackStackEntryFlow.drop(1).take(1).collect {
-          // if the FloatingWindow was closed without using VirtueNavController
-          // (e.g. the scrim was clicked on a Dialog)
-          // we need to reflect that in history
-          if(history.currentEntry.index != navController.currentBackstackWithoutGraphs.lastIndex) {
-            history.move(-1)
-            history.awaitChangeNoOp()
-          }
+          historyMutex.withLock {
+            // if the FloatingWindow was closed without using VirtueNavController
+            // (e.g. the scrim was clicked on a Dialog)
+            // we need to reflect that in history
+            if(history.currentEntry.index != navController.currentBackstackWithoutGraphs.lastIndex) {
+              history.move(-1)
+              history.awaitChangeNoOp()
+            }
 
-          history.clearForwardNavigation()
+            history.clearForwardNavigation()
+          }
         }
 
         waitForFloatingWindowJob = null

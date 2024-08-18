@@ -23,12 +23,12 @@ class SettingsDestination(
   onNavigateBack: () -> Unit,
   onNavigateToAboutUs: () -> Unit,
   override val parentComponent: TodoSessionComponent,
-) : TodoDestination<Routes.Settings.Home, SettingsIntent, SettingsCompositor, SettingsViewState>() {
+) : TodoDestination<Routes.Settings.Settings, SettingsIntent, SettingsCompositor, SettingsViewState>() {
   override val view: SettingsView = { state, onIntent -> SettingsView(state, onIntent) }
 
   override val component = SettingsComponent.createKmp(
     parentComponent = parentComponent,
-    route = Routes.Settings.Home,
+    route = Routes.Settings.Settings,
     navigator = SettingsNavigator(
       onNavigateBack = onNavigateBack,
       onNavigateToAboutUs = onNavigateToAboutUs,
@@ -40,15 +40,15 @@ class SettingsDestination(
 @Component
 abstract class SettingsComponent(
   @Component override val parentComponent: TodoSessionComponent,
-  override val route: Routes.Settings.Home,
+  override val route: Routes.Settings.Settings,
   @get:Provides val navigator: SettingsNavigator,
-) : TodoDestinationComponent<Routes.Settings.Home, SettingsIntent, SettingsCompositor, SettingsViewState> {
+) : TodoDestinationComponent<Routes.Settings.Settings, SettingsIntent, SettingsCompositor, SettingsViewState> {
   companion object
 }
 
 @KmpComponentCreate
 internal expect fun SettingsComponent.Companion.createKmp(
   parentComponent: TodoSessionComponent,
-  route: Routes.Settings.Home,
+  route: Routes.Settings.Settings,
   navigator: SettingsNavigator,
 ): SettingsComponent

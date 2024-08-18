@@ -1,6 +1,7 @@
 package com.eygraber.virtue.session.nav
 
 public interface VirtueRoute {
+  public fun title(): String? = null
   public fun display(): String
 
   public fun up(): VirtueRoute? = null

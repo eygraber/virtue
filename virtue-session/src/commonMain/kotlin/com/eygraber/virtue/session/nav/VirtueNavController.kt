@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.navigation.FloatingWindow
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -21,10 +22,13 @@ import com.eygraber.virtue.platform.Platform
 import com.eygraber.virtue.session.history.History
 import com.eygraber.virtue.session.history.rememberHistory
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
@@ -291,6 +295,8 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
   internal inline fun <reified VR : VirtueRoute> getBackStackEntry(): NavBackStackEntry =
     navController.getBackStackEntry<VR>()
 
+  @PublishedApi internal var waitForFloatingWindowJob: Job? = null
+
   @PublishedApi
   internal inline fun <R> syncWithHistory(
     pushedRoute: VR? = null,
@@ -298,11 +304,16 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
     clearForwardNavigation: Boolean = false,
     op: () -> R,
   ): R {
+    waitForFloatingWindowJob?.cancel()
+    waitForFloatingWindowJob = null
+
     val isSingleTop = navOptions?.shouldLaunchSingleTop() == true
     val before = navController.currentBackstackWithoutGraphs
     val ret = op()
     val after = navController.currentBackstackWithoutGraphs
     val lastEqualIndex = findLastEqualIndex(before, after)
+
+    val isCurrentAFloatingWindow = before.last().destination is FloatingWindow
 
     val delta = lastEqualIndex + 1 - before.size
     if(delta == -1 && !history.canMoveBack && pushedRoute != null) {
@@ -330,7 +341,7 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
             history.clearForwardNavigation()
           }
         }
-        else if(clearForwardNavigation) {
+        else if(clearForwardNavigation || isCurrentAFloatingWindow) {
           // need to await the history event because History
           // doesn't seem to like a move followed immediately by a push
           if(delta < 0) {
@@ -339,6 +350,24 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
 
           history.clearForwardNavigation()
         }
+      }
+    }
+
+    if(after.last().destination is FloatingWindow) {
+      waitForFloatingWindowJob = scope.launch {
+        navController.currentBackStackEntryFlow.drop(1).take(1).collect {
+          // if the FloatingWindow was closed without using VirtueNavController
+          // (e.g. the scrim was clicked on a Dialog)
+          // we need to reflect that in history
+          if(history.currentEntry.index != navController.currentBackstackWithoutGraphs.lastIndex) {
+            history.move(-1)
+            history.awaitChangeNoOp()
+          }
+
+          history.clearForwardNavigation()
+        }
+
+        waitForFloatingWindowJob = null
       }
     }
 

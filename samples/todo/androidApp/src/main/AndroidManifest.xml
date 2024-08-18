@@ -16,6 +16,7 @@
     <activity
       android:name=".TodoAndroidActivity"
       android:resizeableActivity="true"
+      android:label="Virtue Todo"
       android:launchMode="singleInstance"
       android:windowSoftInputMode="adjustResize"
       android:configChanges="colorMode|density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"

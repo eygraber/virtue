@@ -56,12 +56,10 @@ public class WasmBrowserPlatform(
 
   override suspend fun awaitPopstate(): Int =
     suspendCancellableCoroutine { cont ->
-      var listener: ((Event) -> Unit)? = null
+      lateinit var listener: (Event) -> Unit
       listener = { event ->
-        if(listener != null && cont.isActive) {
+        if(cont.isActive) {
           browserWindow.removeEventListener("popstate", listener)
-          // https://youtrack.jetbrains.com/issue/KT-64565
-          listener = null
           val state = (event as PopStateEvent).state?.unsafeCast<WasmHistoryState>()
           cont.resume(state?.index ?: BAD_POPSTATE)
         }
@@ -71,8 +69,6 @@ public class WasmBrowserPlatform(
 
       cont.invokeOnCancellation {
         browserWindow.removeEventListener("popstate", listener)
-        // https://youtrack.jetbrains.com/issue/KT-64565
-        listener = null
       }
     }
 }

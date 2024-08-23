@@ -42,6 +42,9 @@ internal class TimelineHistory<VR : VirtueRoute> private constructor(
   override val canMoveForward: Boolean get() = timeline.value.current < timeline.value.lastIndex
 
   override var isIgnoringPlatformChanges: Boolean = false
+  override fun isIgnoringPlatformChanges(value: Boolean) {
+    isIgnoringPlatformChanges = value
+  }
 
   override fun get(index: Int): History.Entry<VR> = timeline.value.entries[index]
 

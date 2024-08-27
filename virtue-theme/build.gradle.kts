@@ -15,15 +15,16 @@ kotlin {
   )
 
   sourceSets {
-    commonMain {
-      dependencies {
-        implementation(projects.virtueConfig)
-        api(projects.virtueDiScopes)
+    commonMain.dependencies {
+      api(projects.virtueDiScopes)
 
-        api(libs.kotlinInject.runtime)
-        api(libs.kotlinInject.runtimeKsp)
-        api(libs.kotlinx.coroutines.core)
-      }
+      api(libs.kotlinInject.runtime)
+      api(libs.kotlinInject.runtimeKsp)
+      api(libs.kotlinx.coroutines.core)
+    }
+
+    jvmMain.dependencies {
+      implementation(projects.virtuePaths)
     }
   }
 }

@@ -1,10 +1,10 @@
 package com.eygraber.virtue.config
 
 public actual interface VirtueConfig {
-  public actual val appName: String
+  public actual val appInfo: VirtueAppInfo
 }
 
 public data class JsVirtueConfig(
-  public override val appName: String,
-  public val title: String = appName,
+  public override val appInfo: VirtueAppInfo,
+  public val title: String = appInfo.name,
 ) : VirtueConfig

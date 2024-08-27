@@ -48,7 +48,7 @@ public fun <A : VirtueAppComponent, S : VirtueSessionComponent, VR : VirtueRoute
 
   val initialSessionParams = configureInitialSessionParams(
     VirtueSessionParams(
-      title = config.appName,
+      title = config.appInfo.name,
     ),
     initialSessionComponent,
   )

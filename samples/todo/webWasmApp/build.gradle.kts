@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
   id("com.eygraber.conventions-kotlin-multiplatform")
@@ -27,6 +28,15 @@ kotlin {
       commonWebpackConfig {
         outputFileName = "todo-sample-wasm.js"
         experiments += "topLevelAwait"
+
+        devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+          static = (static ?: mutableListOf()).apply {
+            // Serve sources to debug inside browser
+            add(project.rootDir.path)
+            add(project.projectDir.path)
+            add(File(project.rootDir, "samples/todo/").path)
+          }
+        }
       }
     }
   }

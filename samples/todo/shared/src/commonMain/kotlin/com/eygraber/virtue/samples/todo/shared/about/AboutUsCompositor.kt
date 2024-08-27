@@ -7,12 +7,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.eygraber.vice.ViceCompositor
 import com.eygraber.virtue.di.scopes.DestinationSingleton
+import com.eygraber.virtue.storage.kv.UserKeyValueStorage
+import com.eygraber.virtue.storage.kv.edit
+import com.eygraber.virtue.storage.kv.increment
 import me.tatarka.inject.annotations.Inject
 
 @DestinationSingleton
 @Inject
 class AboutUsCompositor(
   private val navigator: AboutUsNavigator,
+  private val userStorage: UserKeyValueStorage,
 ) : ViceCompositor<AboutUsIntent, AboutUsViewState> {
   private var isBackHandlerEnabled by mutableStateOf(false)
   private var backPressesHandled by mutableIntStateOf(0)
@@ -25,7 +29,12 @@ class AboutUsCompositor(
 
   override suspend fun onIntent(intent: AboutUsIntent) {
     when(intent) {
-      AboutUsIntent.BackPress -> backPressesHandled++
+      AboutUsIntent.BackPress -> {
+        backPressesHandled++
+        userStorage.edit {
+          increment("count", 1)
+        }
+      }
       AboutUsIntent.Close -> navigator.onNavigateBack()
       is AboutUsIntent.BackHandlerEnableChange -> {
         backPressesHandled = 0

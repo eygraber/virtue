@@ -6,6 +6,7 @@ plugins {
   id("com.eygraber.conventions-detekt")
   id("com.eygraber.conventions-compose-jetbrains")
   id("com.eygraber.conventions-publish-maven-central")
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.atomicfu)
 }
 

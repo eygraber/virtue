@@ -6,6 +6,7 @@ plugins {
   id("com.eygraber.conventions-kotlin-library")
   id("com.eygraber.conventions-detekt")
   id("com.eygraber.conventions-compose-jetbrains")
+  alias(libs.plugins.dependencyAnalysis)
 }
 
 group = "samples-todo-android"

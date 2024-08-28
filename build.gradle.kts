@@ -21,7 +21,7 @@ buildscript {
 plugins {
   base
   alias(libs.plugins.conventions)
-  alias(libs.plugins.dependencyAnalysis)
+  alias(libs.plugins.dependencyAnalysisRoot)
 }
 
 deleteRootBuildDirWhenCleaning()

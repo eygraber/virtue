@@ -7,6 +7,7 @@ plugins {
   id("com.eygraber.conventions-compose-jetbrains")
   alias(libs.plugins.kotlinxSerialization)
   alias(libs.plugins.ksp)
+  alias(libs.plugins.dependencyAnalysis)
 }
 
 group = "samples-todo-shared"

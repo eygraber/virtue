@@ -6,6 +6,7 @@ plugins {
   id("com.eygraber.conventions-kotlin-multiplatform")
   id("com.eygraber.conventions-compose-jetbrains")
   id("com.eygraber.conventions-detekt")
+  alias(libs.plugins.dependencyAnalysis)
 }
 
 group = "samples-todo-wasmjs"

@@ -16,7 +16,7 @@ composeJetbrains = "1.7.0-alpha03"
 conventions = "0.0.77"
 
 detekt = "1.23.6"
-detektCompose = "0.4.10"
+detektCompose = "0.4.11"
 detektEygraber = "1.0.11"
 
 kotlin = "2.0.20"

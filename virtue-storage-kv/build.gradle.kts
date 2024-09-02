@@ -37,15 +37,13 @@ kotlin {
       implementation(libs.kstore.file)
     }
 
-    jsMain.dependencies {
-      implementation(libs.kstore.storage)
-    }
-
     jvmMain.dependencies {
       implementation(libs.kstore.file)
     }
 
-    wasmJsMain.dependencies {
+    webMain.dependencies {
+      api(projects.virtueBrowserPlatform)
+
       implementation(libs.kstore.storage)
     }
   }

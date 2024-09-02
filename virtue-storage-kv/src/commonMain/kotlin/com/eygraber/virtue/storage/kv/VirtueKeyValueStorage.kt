@@ -79,14 +79,18 @@ internal data class KeyValue(
   val value: String?,
 )
 
-internal expect fun createStore(paths: VirtuePaths, name: String): KStore<List<KeyValue>>
+@Inject
+public expect class VirtueKStoreProvider {
+  internal fun createStore(paths: VirtuePaths, name: String): KStore<List<KeyValue>>
+}
 
 @Inject
 public class PersistedKeyValueStorage(
   paths: VirtuePaths,
+  kStoreProvider: VirtueKStoreProvider,
   @Assisted private val name: String,
 ) : VirtueKeyValueStorage {
-  private val store: KStore<List<KeyValue>> = createStore(paths, name)
+  private val store: KStore<List<KeyValue>> = kStoreProvider.createStore(paths, name)
 
   private val map = MutableStateFlow<Map<String, String?>>(sentinel)
 

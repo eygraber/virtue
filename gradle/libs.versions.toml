@@ -19,6 +19,8 @@ detekt = "1.23.6"
 detektCompose = "0.4.11"
 detektEygraber = "1.0.11"
 
+indexedDb = "0.0.1"
+
 kotlin = "2.0.20"
 
 kotlinInject = "0.7.1"
@@ -65,6 +67,9 @@ buildscript-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", v
 detektCompose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektCompose" }
 detektEygraber-formatting = { module = "com.eygraber.detekt.rules:formatting", version.ref = "detektEygraber" }
 detektEygraber-style = { module = "com.eygraber.detekt.rules:style", version.ref = "detektEygraber" }
+
+indexedDb-core = { module = "com.eygraber.indexeddb:core", version.ref = "indexedDb" }
+indexedDb-externals = { module = "com.eygraber.indexeddb:external", version.ref = "indexedDb" }
 
 jvmDirectories = "dev.dirs:directories:26"
 

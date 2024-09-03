@@ -3,12 +3,12 @@ plugins {
   id("com.eygraber.conventions-android-library")
   id("com.eygraber.conventions-detekt")
   id("com.eygraber.conventions-publish-maven-central")
-  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.kotlinxSerialization)
+  alias(libs.plugins.dependencyAnalysis)
 }
 
 android {
-  namespace = "com.eygraber.virtue.storage.kv"
+  namespace = "com.eygraber.virtue.crypto"
 }
 
 kotlin {
@@ -21,32 +21,30 @@ kotlin {
       api(projects.virtueDiScopes)
       api(projects.virtuePaths)
 
-      api(projects.virtueCrypto)
-
+      api(libs.cryptoKmp.core)
       api(libs.kotlinInject.runtime)
       api(libs.kotlinx.coroutines.core)
 
-      implementation(libs.kotlinx.serialization.json)
-
-      implementation(libs.kstore)
+      implementation(projects.virtueUtils)
     }
 
     androidMain.dependencies {
-      implementation(libs.kstore.file)
+      implementation(libs.cryptoKmp.jdk)
     }
 
     iosMain.dependencies {
-      implementation(libs.kstore.file)
+      implementation(libs.cryptoKmp.openssl3)
     }
 
     jvmMain.dependencies {
-      implementation(libs.kstore.file)
+      implementation(libs.cryptoKmp.jdk)
+      implementation(libs.jvmCredentialSecureStorage)
     }
 
     webMain.dependencies {
-      api(projects.virtueBrowserPlatform)
+      implementation(projects.virtueBrowserPlatform)
 
-      implementation(libs.kstore.storage)
+      implementation(libs.cryptoKmp.webcrypto)
     }
   }
 }

@@ -4,6 +4,7 @@ import Database
 import ObjectStore
 import Transaction
 import WriteTransaction
+import com.eygraber.virtue.utils.runCatchingCoroutine
 import com.juul.indexeddb.external.IDBKey
 import com.juul.indexeddb.external.IDBTransactionDurability
 import com.juul.indexeddb.external.JsAny
@@ -23,9 +24,9 @@ public class IndexedDb {
     block: Database.() -> Unit,
     onError: (Throwable) -> Unit,
   ) {
-    runCatching {
+    runCatchingCoroutine {
       val database = open()
-      runCatching {
+      runCatchingCoroutine {
         database.block()
       }.getOrElse { error ->
         database.close()

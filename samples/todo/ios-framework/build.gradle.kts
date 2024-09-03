@@ -19,7 +19,7 @@ kotlin {
     if(konanTarget.family.isAppleFamily) {
       binaries.framework {
         baseName = "TodoSample"
-        binaryOption("bundleId", "com.eygraber.virtue.samples.todo.ios")
+        binaryOption("bundleId", "com.eygraber.virtue.samples.todo.ios.framework")
         export(projects.virtueApp)
       }
     }

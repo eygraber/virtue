@@ -39,7 +39,7 @@ public class IosVirtuePaths : VirtuePaths {
   }
 
   override val cacheDir: String by lazy {
-    (fileManager.URLsForDirectory(NSCachesDirectory, NSUserDomainMask).first() as NSURL).path!!
+    (fileManager.URLsForDirectory(NSCachesDirectory, NSUserDomainMask).first() as NSURL).createDirectory().path!!
   }
 
   override val projectCacheDir: String by lazy {
@@ -47,7 +47,8 @@ public class IosVirtuePaths : VirtuePaths {
   }
 
   override val configDir: String by lazy {
-    libraryAppSupport.URLByAppendingPathComponent("config", isDirectory = true)?.path!!
+
+    libraryAppSupport.URLByAppendingPathComponent("config", isDirectory = true)!!.createDirectory().path!!
   }
 
   override val projectConfigDir: String by lazy {
@@ -55,11 +56,11 @@ public class IosVirtuePaths : VirtuePaths {
   }
 
   public val documentDataDir: String by lazy {
-    documents.URLByAppendingPathComponent("data", isDirectory = true)?.path!!
+    documents.URLByAppendingPathComponent("data", isDirectory = true)!!.createDirectory().path!!
   }
 
   override val dataDir: String by lazy {
-    libraryAppSupport.URLByAppendingPathComponent("data", isDirectory = true)?.path!!
+    libraryAppSupport.URLByAppendingPathComponent("data", isDirectory = true)!!.createDirectory().path!!
   }
 
   override val projectDataDir: String by lazy {
@@ -68,16 +69,16 @@ public class IosVirtuePaths : VirtuePaths {
 
   @OptIn(ExperimentalForeignApi::class)
   override val noBackupDataDir: String by lazy {
-    libraryAppSupport.URLByAppendingPathComponent("noBackup", isDirectory = true)?.apply {
+    libraryAppSupport.URLByAppendingPathComponent("noBackup", isDirectory = true)!!.createDirectory().apply {
       setResourceValue(NSNumber(bool = true), forKey = NSURLIsExcludedFromBackupKey, error = null)
-    }?.path!!
+    }.path!!
   }
 
   @OptIn(ExperimentalForeignApi::class)
   public val documentsNoBackupDataDir: String by lazy {
-    documents.URLByAppendingPathComponent("noBackup", isDirectory = true)?.apply {
+    documents.URLByAppendingPathComponent("noBackup", isDirectory = true)!!.createDirectory().apply {
       setResourceValue(NSNumber(bool = true), forKey = NSURLIsExcludedFromBackupKey, error = null)
-    }?.path!!
+    }.path!!
   }
 
   override val dataLocalDir: String by lazy {
@@ -89,10 +90,20 @@ public class IosVirtuePaths : VirtuePaths {
   }
 
   override val preferenceDir: String by lazy {
-    libraryAppSupport.URLByAppendingPathComponent("preference", isDirectory = true)?.path!!
+    libraryAppSupport.URLByAppendingPathComponent("preference", isDirectory = true)!!.createDirectory().path!!
   }
 
   override val projectPreferenceDir: String by lazy {
     preferenceDir
+  }
+
+  @OptIn(ExperimentalForeignApi::class)
+  private fun NSURL.createDirectory(): NSURL = apply {
+    fileManager.createDirectoryAtPath(
+      path = path!!,
+      withIntermediateDirectories = true,
+      attributes = null,
+      error = null,
+    )
   }
 }

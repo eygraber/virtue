@@ -15,6 +15,8 @@ composeJetbrains = "1.7.0-alpha03"
 
 conventions = "0.0.77"
 
+cryptoKmp = "0.3.1"
+
 detekt = "1.23.6"
 detektCompose = "0.4.11"
 detektEygraber = "1.0.11"
@@ -64,6 +66,11 @@ buildscript-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", ver
 buildscript-kotlinxSerialization = { module = "org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin", version.ref = "kotlin" }
 buildscript-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.29.0" }
 
+cryptoKmp-core = { module = "dev.whyoleg.cryptography:cryptography-core", version.ref = "cryptoKmp" }
+cryptoKmp-jdk = { module = "dev.whyoleg.cryptography:cryptography-provider-jdk", version.ref = "cryptoKmp" }
+cryptoKmp-openssl3 = { module = "dev.whyoleg.cryptography:cryptography-provider-openssl3-prebuilt", version.ref = "cryptoKmp" }
+cryptoKmp-webcrypto = { module = "dev.whyoleg.cryptography:cryptography-provider-webcrypto", version.ref = "cryptoKmp" }
+
 detektCompose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektCompose" }
 detektEygraber-formatting = { module = "com.eygraber.detekt.rules:formatting", version.ref = "detektEygraber" }
 detektEygraber-style = { module = "com.eygraber.detekt.rules:style", version.ref = "detektEygraber" }
@@ -72,6 +79,7 @@ indexedDb-core = { module = "com.eygraber.indexeddb:core", version.ref = "indexe
 indexedDb-externals = { module = "com.eygraber.indexeddb:external", version.ref = "indexedDb" }
 
 jvmDirectories = "dev.dirs:directories:26"
+jvmCredentialSecureStorage = "com.microsoft:credential-secure-storage:1.0.0"
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cbor", version.ref = "kotlinx-serialization" }

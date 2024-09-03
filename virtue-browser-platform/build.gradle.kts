@@ -16,6 +16,8 @@ kotlin {
   sourceSets {
     webMain {
       dependencies {
+        implementation(projects.virtueUtils)
+
         api(libs.indexedDb.core)
         api(libs.indexedDb.externals)
         implementation(libs.kotlinx.coroutines.core)

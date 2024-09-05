@@ -23,6 +23,7 @@ kotlin {
         implementation(libs.androidx.activityCompose)
         implementation(libs.androidx.annotations)
         implementation(libs.androidx.lifecycle.common)
+        implementation(libs.androidx.startup)
       }
     }
 
@@ -31,9 +32,10 @@ kotlin {
         api(projects.virtueConfig)
         api(projects.virtueDiComponents)
         api(projects.virtueSession)
+        implementation(projects.virtueInit)
         implementation(projects.virtueTheme)
-        implementation(projects.virtueSessionState)
         implementation(projects.virtueThemeCompose)
+        implementation(projects.virtueSessionState)
 
         implementation(compose.foundation)
         api(compose.material3)

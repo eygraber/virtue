@@ -30,7 +30,7 @@ kotlinInject = "0.7.1"
 kotlinx-coroutines = "1.9.0-RC.2"
 kotlinx-serialization = "1.7.2"
 
-ksp = "2.0.20-1.0.24"
+ksp = "2.0.20-1.0.25"
 
 kstore = "0.8.0"
 

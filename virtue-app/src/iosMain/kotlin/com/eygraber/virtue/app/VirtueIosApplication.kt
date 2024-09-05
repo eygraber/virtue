@@ -59,6 +59,8 @@ public abstract class VirtueApplication<A : VirtueAppComponent, S : VirtueSessio
         default = defaultThemeSetting,
       )
     }
+
+    appComponent.initializer.initialize()
   }
 
   protected fun createVirtueViewController(): UIViewController = ComposeUIViewController {

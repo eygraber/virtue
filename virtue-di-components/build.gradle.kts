@@ -31,6 +31,7 @@ kotlin {
       dependencies {
         api(projects.virtueConfig)
         api(projects.virtueDiScopes)
+        api(projects.virtueInit)
         api(projects.virtuePaths)
         api(projects.virtueStorageKv)
         api(projects.virtueTheme)

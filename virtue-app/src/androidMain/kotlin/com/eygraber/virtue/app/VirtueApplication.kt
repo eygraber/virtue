@@ -12,10 +12,4 @@ public interface VirtueApplication<A : VirtueAppComponent> {
   public val config: VirtueConfig
 
   public val defaultThemeSetting: ThemeSetting get() = ThemeSetting.System
-
-  public suspend fun initialize() {
-    appComponent.themeSettings.initialize(
-      default = defaultThemeSetting,
-    )
-  }
 }

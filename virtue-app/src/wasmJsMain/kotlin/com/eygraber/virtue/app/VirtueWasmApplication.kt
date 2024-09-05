@@ -35,6 +35,7 @@ public fun <A : VirtueAppComponent, S : VirtueSessionComponent, VR : VirtueRoute
   val virtuePlatformSessionComponent = VirtuePlatformSessionComponent.create()
 
   val appComponent = appComponentFactory(virtuePlatformComponent, config)
+  appComponent.initializer.initialize()
 
   val sessionComponent = sessionComponentFactory(
     appComponent,

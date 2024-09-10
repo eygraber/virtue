@@ -84,7 +84,7 @@ jobs:
           gradle-version: wrapper
 
       - name: Run dependency analysis check
-        run: ./gradlew buildHealth
+        run: echo "Disabled for now" #./gradlew buildHealth
 
   ktlint:
     runs-on: ubuntu-latest

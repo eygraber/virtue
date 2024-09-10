@@ -82,7 +82,7 @@ public fun <A : VirtueAppComponent, S : VirtueSessionComponent, VR : VirtueRoute
           visible = params.visible,
           title = params.title,
           icon = params.icon,
-          undecorated = params.undecorated,
+          decoration = params.decoration,
           transparent = params.transparent,
           resizable = params.resizable,
           enabled = params.enabled,

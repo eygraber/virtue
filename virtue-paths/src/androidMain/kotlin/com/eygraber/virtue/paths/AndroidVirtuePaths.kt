@@ -2,8 +2,11 @@ package com.eygraber.virtue.paths
 
 import com.eygraber.virtue.android.AppContext
 import com.eygraber.virtue.di.scopes.AppSingleton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 import me.tatarka.inject.annotations.Provides
+import java.io.File
 
 public actual interface VirtuePathsProvider {
   @Provides
@@ -61,5 +64,16 @@ public class AndroidVirtuePaths(
 
   override val projectPreferenceDir: String by lazy {
     context.filesDir.absolutePath
+  }
+}
+
+public suspend fun VirtuePaths.clearAllProjectData() {
+  withContext(Dispatchers.IO) {
+    File(projectCacheDir).deleteRecursively()
+    File(projectConfigDir).deleteRecursively()
+    File(projectDataDir).deleteRecursively()
+    File(noBackupDataDir).deleteRecursively()
+    File(projectDataLocalDir).deleteRecursively()
+    File(projectPreferenceDir).deleteRecursively()
   }
 }

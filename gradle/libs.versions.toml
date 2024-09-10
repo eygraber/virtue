@@ -68,6 +68,8 @@ buildscript-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", ver
 buildscript-kotlinxSerialization = { module = "org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin", version.ref = "kotlin" }
 buildscript-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.29.0" }
 
+compose-placeholder = "com.eygraber:compose-placeholder-material3:1.0.8"
+
 cryptoKmp-core = { module = "dev.whyoleg.cryptography:cryptography-core", version.ref = "cryptoKmp" }
 cryptoKmp-jdk = { module = "dev.whyoleg.cryptography:cryptography-provider-jdk", version.ref = "cryptoKmp" }
 cryptoKmp-openssl3 = { module = "dev.whyoleg.cryptography:cryptography-provider-openssl3-prebuilt", version.ref = "cryptoKmp" }

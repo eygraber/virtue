@@ -58,6 +58,12 @@ plugins {
   id("com.gradle.develocity") version "3.18.1"
 }
 
+include(":samples:auth:androidApp")
+include(":samples:auth:desktopApp")
+include(":samples:auth:ios-framework")
+include(":samples:auth:shared")
+include(":samples:auth:webJsApp")
+include(":samples:auth:webWasmApp")
 include(":samples:todo:androidApp")
 include(":samples:todo:desktopApp")
 include(":samples:todo:ios-framework")

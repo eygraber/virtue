@@ -6,8 +6,9 @@ import com.eygraber.virtue.storage.kv.edit
 import com.eygraber.virtue.utils.runCatchingCoroutine
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -30,7 +31,7 @@ public class VirtueAuth(
     internal val expirationPolicy: ExpirationPolicy = ExpirationPolicy.Expire(),
     internal val defaultExtensionPolicy: ExtensionPolicy? = null,
   ) {
-    public fun isExpired(): Boolean = expirationPolicy.at > Clock.System.now()
+    public fun isExpired(): Boolean = expirationPolicy.at < Clock.System.now()
   }
 
   @Serializable
@@ -71,8 +72,6 @@ public class VirtueAuth(
   }
 
   public sealed interface State {
-    public data object Loading : State
-
     public data object LoggedIn : State
 
     public data object LoggedOut : State
@@ -87,9 +86,9 @@ public class VirtueAuth(
     public data object Error : State
   }
 
-  private val state = MutableStateFlow<State>(State.Loading)
+  private val state = MutableStateFlow<State?>(null)
 
-  public val stateFlow: Flow<State> = state.filter { it != State.Loading }
+  public val stateFlow: Flow<State> = state.filterNotNull()
 
   public suspend fun initialize() {
     val isLoggingOut = deviceStorage.getInt(LOG_OUT, IS_NOT_LOGGING_OUT)
@@ -104,10 +103,7 @@ public class VirtueAuth(
       }
 
       else -> when(val token = loadToken()) {
-        null -> {
-          startLogout(State.LoggingOut.Automatically)
-          State.LoggingOut.Automatically
-        }
+        null -> State.LoggedOut
 
         else -> {
           if(token.isExpired() && token.expirationPolicy is ExpirationPolicy.Expire) {
@@ -126,6 +122,8 @@ public class VirtueAuth(
     token: Token,
   ) {
     storeToken(token)
+
+    state.value = State.LoggedIn
   }
 
   public suspend fun extendTokenExpiration(
@@ -172,6 +170,8 @@ public class VirtueAuth(
    */
   public suspend fun isTokenExpired(): Boolean = loadToken()?.isExpired() ?: true
 
+  public suspend fun currentState(): State = stateFlow.first()
+
   public suspend fun awaitState(state: State): Boolean =
     stateFlow.filterIsInstance(state::class).firstOrNull() != null
 
@@ -187,6 +187,8 @@ public class VirtueAuth(
         },
       )
     }
+
+    state.value = reason
   }
 
   public suspend fun onError() {
@@ -194,6 +196,8 @@ public class VirtueAuth(
       putInt(LOG_OUT, IS_ERROR)
       remove(TOKEN)
     }
+
+    state.value = State.Error
   }
 
   public suspend fun onLogoutSucceeded() {
@@ -201,6 +205,8 @@ public class VirtueAuth(
       putInt(LOG_OUT, IS_LOGGED_OUT)
       remove(TOKEN)
     }
+
+    state.value = State.LoggedOut
   }
 
   @OptIn(ExperimentalSerializationApi::class)

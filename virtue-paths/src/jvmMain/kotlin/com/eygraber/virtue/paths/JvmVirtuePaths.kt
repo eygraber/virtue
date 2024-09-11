@@ -4,6 +4,8 @@ import com.eygraber.virtue.config.VirtueAppInfo
 import com.eygraber.virtue.di.scopes.AppSingleton
 import dev.dirs.BaseDirectories
 import dev.dirs.ProjectDirectories
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 import me.tatarka.inject.annotations.Provides
 import java.io.File
@@ -80,5 +82,16 @@ public class JvmVirtuePaths(
 
   override val projectPreferenceDir: String by lazy {
     projectDirs.preferenceDir.alsoMkDirs()
+  }
+}
+
+public suspend fun VirtuePaths.clearAllProjectData() {
+  withContext(Dispatchers.IO) {
+    File(projectCacheDir).deleteRecursively()
+    File(projectConfigDir).deleteRecursively()
+    File(projectDataDir).deleteRecursively()
+    File(noBackupDataDir).deleteRecursively()
+    File(projectDataLocalDir).deleteRecursively()
+    File(projectPreferenceDir).deleteRecursively()
   }
 }

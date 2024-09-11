@@ -1,0 +1,16 @@
+<resources>
+  <string name="auth_error_dialog_title">Auth Error</string>
+  <string name="auth_error_dialog_text">A fatal error occurred. You can try restarting the app, and if that doesn't work you can clear the app's data.</string>
+  <string name="auth_error_dialog_restart">Restart</string>
+  <string name="auth_error_dialog_clear_data">Clear App Data</string>
+
+  <string name="login_title">Login</string>
+  <string name="login_token_label">Enter your token:</string>
+  <string name="login_button">Login</string>
+
+  <string name="logged_in_title">Logged In</string>
+  <string name="logged_in_content">"You are logged in!"</string>
+  <string name="logged_in_logout_button">Logout</string>
+
+  <string name="logout_title">Logging you out…</string>
+</resources>

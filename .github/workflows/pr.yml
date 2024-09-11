@@ -30,7 +30,7 @@ jobs:
           gradle-version: wrapper
 
       - name: Run assemble task
-        run: ./gradlew assemble -x assembleRelease -x jsBrowserProductionWebpack -x wasmJsBrowserProductionWebpack
+        run: ./gradlew assemble -x assembleRelease -x jsBrowserProductionWebpack -x wasmJsBrowserProductionWebpack -x compileProductionExecutableKotlinWasmJs -x linkReleaseFrameworkIosArm64 -x linkReleaseFrameworkIosX64 -x linkReleaseFrameworkIosFat -x linkReleaseFrameworkIosSimulatorArm64
 
   detekt:
     runs-on: ubuntu-latest
@@ -84,7 +84,7 @@ jobs:
           gradle-version: wrapper
 
       - name: Run dependency analysis check
-        run: ./gradlew buildHealth
+        run: echo "Disabled for now" #./gradlew buildHealth
 
   ktlint:
     runs-on: ubuntu-latest

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Inject
 
 @AppSingleton
 public abstract class VirtueAppInitializer {
@@ -26,7 +27,7 @@ public abstract class VirtueAppInitializer {
     if(initialized) return
 
     initialized = true
-    if(firstOpen.value != null) {
+    if(firstOpen.value == null) {
       GlobalScope.launch {
         val isFirstOpen = deviceKeyValueStorage.getBoolean(FIRST_OPEN, true)
         firstOpen.value = isFirstOpen
@@ -42,6 +43,13 @@ public abstract class VirtueAppInitializer {
   }
 
   protected abstract fun CoroutineScope.initialize()
+
+  @Inject
+  public class NoOp(
+    override val deviceKeyValueStorage: DeviceKeyValueStorage,
+  ) : VirtueAppInitializer() {
+    override fun CoroutineScope.initialize() {}
+  }
 
   public companion object {
     private const val FIRST_OPEN = "com.eygraber.virtue.init.FIRST_OPEN"

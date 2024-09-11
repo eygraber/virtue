@@ -24,10 +24,12 @@ kotlin {
 
     androidMain.dependencies {
       api(projects.virtueAndroid)
+      implementation(libs.kotlinx.coroutines.core)
     }
 
     jvmMain.dependencies {
       implementation(libs.jvmDirectories)
+      implementation(libs.kotlinx.coroutines.core)
     }
   }
 }

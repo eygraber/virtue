@@ -29,6 +29,7 @@ kotlinInject = "0.7.1"
 
 kotlinx-coroutines = "1.9.0-RC.2"
 kotlinx-serialization = "1.7.2"
+kotlinx-datetime = "0.6.1"
 
 ksp = "2.0.20-1.0.25"
 
@@ -67,6 +68,8 @@ buildscript-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", ver
 buildscript-kotlinxSerialization = { module = "org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin", version.ref = "kotlin" }
 buildscript-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.29.0" }
 
+compose-placeholder = "com.eygraber:compose-placeholder-material3:1.0.8"
+
 cryptoKmp-core = { module = "dev.whyoleg.cryptography:cryptography-core", version.ref = "cryptoKmp" }
 cryptoKmp-jdk = { module = "dev.whyoleg.cryptography:cryptography-provider-jdk", version.ref = "cryptoKmp" }
 cryptoKmp-openssl3 = { module = "dev.whyoleg.cryptography:cryptography-provider-openssl3-prebuilt", version.ref = "cryptoKmp" }
@@ -83,6 +86,7 @@ jvmDirectories = "dev.dirs:directories:26"
 jvmCredentialSecureStorage = "com.microsoft:credential-secure-storage:1.0.0"
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cbor", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }

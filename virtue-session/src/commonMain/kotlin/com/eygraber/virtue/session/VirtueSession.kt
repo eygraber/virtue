@@ -2,18 +2,15 @@ package com.eygraber.virtue.session
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import com.eygraber.vice.nav.LocalSharedTransitionScope
 import com.eygraber.virtue.back.press.dispatch.BackHandler
 import com.eygraber.virtue.back.press.dispatch.PlatformNavigationHandler
@@ -33,6 +30,11 @@ import me.tatarka.inject.annotations.Inject
 import kotlin.jvm.JvmOverloads
 import kotlin.reflect.KClass
 
+public typealias VirtueSessionTheme = @Composable (
+  isApplicationInDarkMode: Boolean,
+  content: @Composable () -> Unit,
+) -> Unit
+
 @SessionSingleton
 @Inject
 public class VirtueSession(
@@ -43,8 +45,9 @@ public class VirtueSession(
     public val routeClass: KClass<VR>,
     public val navGraphBuilder: VirtueNavGraphBuilder<T, VR>,
     public val deepLinksFlow: MutableSharedFlow<VirtueDeepLink<VR>> = MutableSharedFlow(),
-    public val darkColorScheme: ColorScheme = androidx.compose.material3.darkColorScheme(),
-    public val lightColorScheme: ColorScheme = androidx.compose.material3.lightColorScheme(),
+    public val theme: VirtueSessionTheme = { isApplicationInDarkMode, content ->
+      VirtueMaterialTheme(isApplicationInDarkMode, content)
+    },
     public val navHostParams: VirtueNavHostParams = VirtueNavHostParams(),
   ) {
     @JvmOverloads
@@ -52,16 +55,14 @@ public class VirtueSession(
       initialRoute: VR = this.initialRoute,
       navGraphBuilder: VirtueNavGraphBuilder<T, VR> = this.navGraphBuilder,
       deepLinksFlow: MutableSharedFlow<VirtueDeepLink<VR>> = this.deepLinksFlow,
-      darkColorScheme: ColorScheme = this.darkColorScheme,
-      lightColorScheme: ColorScheme = this.lightColorScheme,
+      theme: VirtueSessionTheme = this.theme,
       navHostParams: VirtueNavHostParams = this.navHostParams,
     ): Params<T, VR> = Params(
       initialRoute = initialRoute,
       navGraphBuilder = navGraphBuilder,
       routeClass = routeClass,
       deepLinksFlow = deepLinksFlow,
-      darkColorScheme = darkColorScheme,
-      lightColorScheme = lightColorScheme,
+      theme = theme,
       navHostParams = navHostParams,
     )
   }
@@ -93,35 +94,26 @@ public class VirtueSession(
       isBackHandlerEnabled = navController.popBackStack()
     }
 
-    MaterialTheme(
-      colorScheme = when {
-        themeSettings.isApplicationInDarkTheme() -> params.darkColorScheme
-        else -> params.lightColorScheme
-      },
-    ) {
+    params.theme(themeSettings.isApplicationInDarkTheme()) {
       PlatformNavigation(
         navController = navController,
       )
 
-      Box(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-      ) {
-        SharedTransitionLayout {
-          CompositionLocalProvider(
-            LocalSharedTransitionScope provides this,
+      SharedTransitionLayout {
+        CompositionLocalProvider(
+          LocalSharedTransitionScope provides this,
+        ) {
+          VirtueNavHost(
+            navController = navController.navController,
+            startDestination = params.initialRoute,
+            params = params.navHostParams,
           ) {
-            VirtueNavHost(
-              navController = navController.navController,
-              startDestination = params.initialRoute,
-              params = params.navHostParams,
-            ) {
-              with(params.navGraphBuilder) {
-                buildGraph(
-                  sessionComponent = sessionComponent,
-                  initialRoute = params.initialRoute,
-                  navController = navController,
-                )
-              }
+            with(params.navGraphBuilder) {
+              buildGraph(
+                sessionComponent = sessionComponent,
+                initialRoute = params.initialRoute,
+                navController = navController,
+              )
             }
           }
         }
@@ -181,4 +173,18 @@ public class VirtueSession(
       },
     )
   }
+}
+
+@Composable
+private fun VirtueMaterialTheme(
+  isApplicationInDarkMode: Boolean,
+  content: @Composable () -> Unit,
+) {
+  MaterialTheme(
+    colorScheme = when {
+      isApplicationInDarkMode -> darkColorScheme()
+      else -> lightColorScheme()
+    },
+    content = content,
+  )
 }

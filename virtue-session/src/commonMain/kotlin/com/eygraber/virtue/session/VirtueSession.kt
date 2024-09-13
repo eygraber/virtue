@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -45,6 +47,8 @@ public class VirtueSession(
     public val deepLinksFlow: MutableSharedFlow<VirtueDeepLink<VR>> = MutableSharedFlow(),
     public val darkColorScheme: ColorScheme = androidx.compose.material3.darkColorScheme(),
     public val lightColorScheme: ColorScheme = androidx.compose.material3.lightColorScheme(),
+    public val typography: (@Composable () -> Typography)? = null,
+    public val shapes: (@Composable () -> Shapes)? = null,
     public val navHostParams: VirtueNavHostParams = VirtueNavHostParams(),
   ) {
     @JvmOverloads
@@ -54,6 +58,8 @@ public class VirtueSession(
       deepLinksFlow: MutableSharedFlow<VirtueDeepLink<VR>> = this.deepLinksFlow,
       darkColorScheme: ColorScheme = this.darkColorScheme,
       lightColorScheme: ColorScheme = this.lightColorScheme,
+      typography: (@Composable () -> Typography)? = this.typography,
+      shapes: (@Composable () -> Shapes)? = this.shapes,
       navHostParams: VirtueNavHostParams = this.navHostParams,
     ): Params<T, VR> = Params(
       initialRoute = initialRoute,
@@ -62,6 +68,8 @@ public class VirtueSession(
       deepLinksFlow = deepLinksFlow,
       darkColorScheme = darkColorScheme,
       lightColorScheme = lightColorScheme,
+      typography = typography,
+      shapes = shapes,
       navHostParams = navHostParams,
     )
   }
@@ -98,6 +106,8 @@ public class VirtueSession(
         themeSettings.isApplicationInDarkTheme() -> params.darkColorScheme
         else -> params.lightColorScheme
       },
+      shapes = params.shapes?.invoke() ?: MaterialTheme.shapes,
+      typography = params.typography?.invoke() ?: MaterialTheme.typography,
     ) {
       PlatformNavigation(
         navController = navController,

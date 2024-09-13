@@ -9,6 +9,8 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +37,13 @@ import me.tatarka.inject.annotations.Inject
 import kotlin.jvm.JvmOverloads
 import kotlin.reflect.KClass
 
+public typealias VirtueSessionTheme = @Composable (
+  ColorScheme,
+  Shapes,
+  Typography,
+  @Composable () -> Unit,
+) -> Unit
+
 @SessionSingleton
 @Inject
 public class VirtueSession(
@@ -45,8 +54,11 @@ public class VirtueSession(
     public val routeClass: KClass<VR>,
     public val navGraphBuilder: VirtueNavGraphBuilder<T, VR>,
     public val deepLinksFlow: MutableSharedFlow<VirtueDeepLink<VR>> = MutableSharedFlow(),
-    public val darkColorScheme: ColorScheme = androidx.compose.material3.darkColorScheme(),
-    public val lightColorScheme: ColorScheme = androidx.compose.material3.lightColorScheme(),
+    public val theme: VirtueSessionTheme = { themeColorScheme, themeShapes, themeTypography, content ->
+      VirtueMaterialTheme(themeColorScheme, themeShapes, themeTypography, content)
+    },
+    public val darkColorScheme: ColorScheme = darkColorScheme(),
+    public val lightColorScheme: ColorScheme = lightColorScheme(),
     public val typography: (@Composable () -> Typography)? = null,
     public val shapes: (@Composable () -> Shapes)? = null,
     public val navHostParams: VirtueNavHostParams = VirtueNavHostParams(),
@@ -56,6 +68,7 @@ public class VirtueSession(
       initialRoute: VR = this.initialRoute,
       navGraphBuilder: VirtueNavGraphBuilder<T, VR> = this.navGraphBuilder,
       deepLinksFlow: MutableSharedFlow<VirtueDeepLink<VR>> = this.deepLinksFlow,
+      theme: VirtueSessionTheme = this.theme,
       darkColorScheme: ColorScheme = this.darkColorScheme,
       lightColorScheme: ColorScheme = this.lightColorScheme,
       typography: (@Composable () -> Typography)? = this.typography,
@@ -66,6 +79,7 @@ public class VirtueSession(
       navGraphBuilder = navGraphBuilder,
       routeClass = routeClass,
       deepLinksFlow = deepLinksFlow,
+      theme = theme,
       darkColorScheme = darkColorScheme,
       lightColorScheme = lightColorScheme,
       typography = typography,
@@ -101,13 +115,13 @@ public class VirtueSession(
       isBackHandlerEnabled = navController.popBackStack()
     }
 
-    MaterialTheme(
-      colorScheme = when {
+    params.theme(
+      when {
         themeSettings.isApplicationInDarkTheme() -> params.darkColorScheme
         else -> params.lightColorScheme
       },
-      shapes = params.shapes?.invoke() ?: MaterialTheme.shapes,
-      typography = params.typography?.invoke() ?: MaterialTheme.typography,
+      params.shapes?.invoke() ?: MaterialTheme.shapes,
+      params.typography?.invoke() ?: MaterialTheme.typography,
     ) {
       PlatformNavigation(
         navController = navController,
@@ -191,4 +205,19 @@ public class VirtueSession(
       },
     )
   }
+}
+
+@Composable
+private fun VirtueMaterialTheme(
+  colorScheme: ColorScheme,
+  shapes: Shapes,
+  typography: Typography,
+  content: @Composable () -> Unit,
+) {
+  MaterialTheme(
+    colorScheme = colorScheme,
+    shapes = shapes,
+    typography = typography,
+    content = content,
+  )
 }

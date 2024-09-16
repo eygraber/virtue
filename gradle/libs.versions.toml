@@ -83,7 +83,7 @@ indexedDb-core = { module = "com.eygraber.indexeddb:core", version.ref = "indexe
 indexedDb-externals = { module = "com.eygraber.indexeddb:external", version.ref = "indexedDb" }
 
 jvmDirectories = "dev.dirs:directories:26"
-jvmCredentialSecureStorage = "com.microsoft:credential-secure-storage:1.0.0"
+jvmCredentialSecureStorage = "com.microsoft:credential-secure-storage:1.0.3"
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }

@@ -1,5 +1,5 @@
 [versions]
-android-plugin = "8.6.0"
+android-plugin = "8.6.1"
 
 android-sdk-compile = "35"
 android-sdk-target = "35"

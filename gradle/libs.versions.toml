@@ -56,7 +56,7 @@ androidx-activityCompose = { module = "androidx.activity:activity-compose", vers
 androidx-annotations = "androidx.annotation:annotation:1.8.2"
 androidx-appCompat = "androidx.appcompat:appcompat:1.7.0"
 androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common", version.ref = "androidx-lifecycle" }
-androidx-startup = "androidx.startup:startup-runtime:1.1.1"
+androidx-startup = "androidx.startup:startup-runtime:1.2.0"
 
 buildscript-android = { module = "com.android.tools.build:gradle", version.ref = "android-plugin" }
 buildscript-androidCacheFix = { module = "gradle.plugin.org.gradle.android:android-cache-fix-gradle-plugin", version = "3.0.1" }

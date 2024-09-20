@@ -54,7 +54,7 @@ dependencyResolutionManagement {
 rootProject.name = "virtue"
 
 plugins {
-  id("com.eygraber.conventions.settings") version "0.0.77"
+  id("com.eygraber.conventions.settings") version "0.0.78"
   id("com.gradle.develocity") version "3.18.1"
 }
 

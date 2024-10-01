@@ -3,7 +3,6 @@ package com.eygraber.virtue.session
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.window.WindowDecoration
 import androidx.compose.ui.window.WindowState
 import com.eygraber.virtue.session.nav.VirtueRoute
 
@@ -14,7 +13,7 @@ public actual data class VirtueSessionParams<VR : VirtueRoute>(
   val visible: Boolean = true,
   val title: String = "Untitled",
   val icon: Painter? = null,
-  val decoration: WindowDecoration = WindowDecoration.SystemDefault,
+  val undecorated: Boolean = false,
   val transparent: Boolean = false,
   val resizable: Boolean = true,
   val enabled: Boolean = true,

@@ -6,10 +6,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowDecoration
 import androidx.compose.ui.window.application
 import com.eygraber.virtue.back.press.dispatch.OnBackPressDispatcherProvider
 import com.eygraber.virtue.back.press.dispatch.WithBackPressDispatching
@@ -25,6 +27,7 @@ import com.eygraber.virtue.session.nav.VirtueRoute
 import com.eygraber.virtue.theme.ThemeSetting
 import java.awt.Dimension
 
+@OptIn(ExperimentalComposeUiApi::class)
 public fun <A : VirtueAppComponent, S : VirtueSessionComponent, VR : VirtueRoute> virtueApplication(
   appComponentFactory: (VirtuePlatformComponent, DesktopVirtueConfig) -> A,
   initialSessionComponentFactory: (A, VirtuePlatformSessionComponent) -> S,
@@ -82,7 +85,10 @@ public fun <A : VirtueAppComponent, S : VirtueSessionComponent, VR : VirtueRoute
           visible = params.visible,
           title = params.title,
           icon = params.icon,
-          decoration = params.decoration,
+          decoration = when {
+            params.undecorated -> WindowDecoration.Undecorated()
+            else -> WindowDecoration.SystemDefault
+          },
           transparent = params.transparent,
           resizable = params.resizable,
           enabled = params.enabled,

@@ -4,11 +4,7 @@ import com.eygraber.vice.ViceCompositor
 import com.eygraber.vice.ViceEffects
 import com.eygraber.vice.nav.ViceDestination
 import me.tatarka.inject.annotations.Provides
-import kotlin.experimental.ExperimentalObjCRefinement
-import kotlin.native.HiddenFromObjC
 
-@OptIn(ExperimentalObjCRefinement::class)
-@HiddenFromObjC
 public abstract class VirtueDestination<R, I, C, E, S, out ParentComponent> : ViceDestination<I, C, E, S>()
   where I : Any,
         C : ViceCompositor<I, S>,

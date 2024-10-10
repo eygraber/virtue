@@ -23,10 +23,7 @@ internal interface History<VR : VirtueRoute> {
   val canMoveBack: Boolean
   val canMoveForward: Boolean
 
-  val isIgnoringPlatformChanges: Boolean
-
-  // https://youtrack.jetbrains.com/issue/KT-70901 - should be fixed in 2.0.21
-  fun isIgnoringPlatformChanges(value: Boolean)
+  var isIgnoringPlatformChanges: Boolean
 
   operator fun get(index: Int): Entry<VR>
 

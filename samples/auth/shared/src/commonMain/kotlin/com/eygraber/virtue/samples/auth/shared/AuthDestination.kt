@@ -6,16 +6,10 @@ import com.eygraber.virtue.di.scopes.DestinationSingleton
 import com.eygraber.virtue.session.VirtueDestination
 import com.eygraber.virtue.session.VirtueDestinationComponent
 import me.tatarka.inject.annotations.Provides
-import kotlin.experimental.ExperimentalObjCRefinement
-import kotlin.native.HiddenFromObjC
 
-@OptIn(ExperimentalObjCRefinement::class)
-@HiddenFromObjC
 abstract class AuthDestination<R, I, C, S> : VirtueDestination<R, I, C, ViceEffects, S, AuthSessionComponent>()
   where I : Any, C : ViceCompositor<I, S>, S : Any
 
-@OptIn(ExperimentalObjCRefinement::class)
-@HiddenFromObjC
 abstract class AuthDestinationWithEffects<R, I, C, E, S> : VirtueDestination<R, I, C, E, S, AuthSessionComponent>()
   where I : Any, C : ViceCompositor<I, S>, E : ViceEffects, S : Any
 

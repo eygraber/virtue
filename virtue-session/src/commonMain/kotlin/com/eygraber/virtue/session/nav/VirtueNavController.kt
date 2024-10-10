@@ -222,8 +222,7 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
   override fun moveForward(): Boolean =
     history.canMoveForward.also { canMoveForward ->
       if(canMoveForward) {
-        // https://youtrack.jetbrains.com/issue/KT-70901 - should be fixed in 2.0.21
-        history.isIgnoringPlatformChanges(true)
+        history.isIgnoringPlatformChanges = true
         val currentIndex = history.currentEntry.index
         navController.navigate(history[currentIndex + 1].route)
         history.move(1)
@@ -328,8 +327,7 @@ internal class VirtueNavControllerImpl<VR : VirtueRoute>(
         }
         else {
           if(delta < 0) {
-            // https://youtrack.jetbrains.com/issue/KT-70901 - should be fixed in 2.0.21
-            history.isIgnoringPlatformChanges(true)
+            history.isIgnoringPlatformChanges = true
             history.move(delta)
           }
 

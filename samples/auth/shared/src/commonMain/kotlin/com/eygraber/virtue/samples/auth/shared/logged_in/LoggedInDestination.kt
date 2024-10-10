@@ -8,16 +8,12 @@ import com.eygraber.virtue.samples.auth.shared.Routes
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.KmpComponentCreate
 import me.tatarka.inject.annotations.Provides
-import kotlin.experimental.ExperimentalObjCRefinement
-import kotlin.native.HiddenFromObjC
 
 @DestinationSingleton
 class LoggedInNavigator(
   val onNavigateToRoot: () -> Unit,
 )
 
-@OptIn(ExperimentalObjCRefinement::class)
-@HiddenFromObjC
 class LoggedInDestination(
   override val parentComponent: AuthSessionComponent,
   private val navigator: LoggedInNavigator,

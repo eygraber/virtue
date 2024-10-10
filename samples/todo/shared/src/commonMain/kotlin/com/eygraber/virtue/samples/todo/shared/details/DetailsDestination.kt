@@ -8,16 +8,12 @@ import com.eygraber.virtue.samples.todo.shared.TodoSessionComponent
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.KmpComponentCreate
 import me.tatarka.inject.annotations.Provides
-import kotlin.experimental.ExperimentalObjCRefinement
-import kotlin.native.HiddenFromObjC
 
 @DestinationSingleton
 class DetailsNavigator(
   val onNavigateBack: () -> Unit,
 )
 
-@OptIn(ExperimentalObjCRefinement::class)
-@HiddenFromObjC
 class DetailsDestination(
   op: Routes.Details,
   onNavigateBack: () -> Unit,

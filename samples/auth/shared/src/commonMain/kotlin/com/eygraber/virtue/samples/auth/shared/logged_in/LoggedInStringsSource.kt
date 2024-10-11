@@ -7,13 +7,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import me.tatarka.inject.annotations.Inject
-import kotlin.experimental.ExperimentalObjCRefinement
-import kotlin.native.HiddenFromObjC
 
 @DestinationSingleton
 @Inject
-@OptIn(ExperimentalObjCRefinement::class)
-@HiddenFromObjC
 class LoggedInStringsSource(
   dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : LoadableFlowSource<LoggedInStrings>() {

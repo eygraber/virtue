@@ -53,7 +53,7 @@ android-desugar = "com.android.tools:desugar_jdk_libs:2.1.2"
 
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
-androidx-annotations = "androidx.annotation:annotation:1.8.2"
+androidx-annotations = "androidx.annotation:annotation:1.9.0"
 androidx-appCompat = "androidx.appcompat:appcompat:1.7.0"
 androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common", version.ref = "androidx-lifecycle" }
 androidx-startup = "androidx.startup:startup-runtime:1.2.0"

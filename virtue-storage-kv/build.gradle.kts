@@ -26,6 +26,7 @@ kotlin {
       api(libs.kotlinInject.runtime)
       api(libs.kotlinx.coroutines.core)
 
+      implementation(libs.kotlinx.io)
       implementation(libs.kotlinx.serialization.json)
 
       implementation(libs.kstore)

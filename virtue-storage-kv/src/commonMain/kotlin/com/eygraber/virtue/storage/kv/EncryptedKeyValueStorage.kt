@@ -2,7 +2,7 @@ package com.eygraber.virtue.storage.kv
 
 import com.eygraber.virtue.crypto.KeyStoreResult
 import com.eygraber.virtue.crypto.VirtueCryptoKeyStore
-import dev.whyoleg.cryptography.operations.cipher.AuthenticatedCipher
+import dev.whyoleg.cryptography.operations.AuthenticatedCipher
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject

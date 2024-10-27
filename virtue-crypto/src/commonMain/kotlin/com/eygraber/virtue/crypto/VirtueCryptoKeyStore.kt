@@ -1,6 +1,6 @@
 package com.eygraber.virtue.crypto
 
-import dev.whyoleg.cryptography.operations.cipher.AuthenticatedCipher
+import dev.whyoleg.cryptography.operations.AuthenticatedCipher
 import dev.whyoleg.cryptography.random.CryptographyRandom
 import me.tatarka.inject.annotations.Inject
 

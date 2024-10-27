@@ -3,7 +3,7 @@ package com.eygraber.virtue.storage.kv
 import com.eygraber.virtue.crypto.KeyStoreResult
 import com.eygraber.virtue.crypto.VirtueCryptoKeyStore
 import com.eygraber.virtue.storage.kv.VirtueKeyValueStorage.Editable
-import dev.whyoleg.cryptography.operations.cipher.AuthenticatedCipher
+import dev.whyoleg.cryptography.operations.AuthenticatedCipher
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 

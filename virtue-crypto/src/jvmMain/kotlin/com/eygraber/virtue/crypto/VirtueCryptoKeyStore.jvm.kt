@@ -7,9 +7,10 @@ import com.microsoft.credentialstorage.StorageProvider.SecureOption
 import com.microsoft.credentialstorage.model.StoredToken
 import com.microsoft.credentialstorage.model.StoredTokenType
 import dev.whyoleg.cryptography.CryptographyProvider
-import dev.whyoleg.cryptography.algorithms.digest.SHA256
-import dev.whyoleg.cryptography.algorithms.symmetric.AES
-import dev.whyoleg.cryptography.operations.cipher.AuthenticatedCipher
+import dev.whyoleg.cryptography.algorithms.AES
+import dev.whyoleg.cryptography.algorithms.AES.Key
+import dev.whyoleg.cryptography.algorithms.SHA256
+import dev.whyoleg.cryptography.operations.AuthenticatedCipher
 import dev.whyoleg.cryptography.providers.jdk.JDK
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -67,7 +68,7 @@ public actual class VirtueCryptoKeyStore(
             if(keyStore.entryInstanceOf(alias, SecretKeyEntry::class.java)) {
               val key = keyStore.getKey(alias, secretKeyPassword) as SecretKey
               KeyStoreResult.Success(
-                crypto.get(AES.GCM).keyDecoder().decodeFrom(AES.Key.Format.RAW, key.encoded).cipher(),
+                crypto.get(AES.GCM).keyDecoder().decodeFromByteArray(AES.Key.Format.RAW, key.encoded).cipher(),
               )
             }
             else {
@@ -78,10 +79,10 @@ public actual class VirtueCryptoKeyStore(
           else -> KeyStoreResult.Success(
             crypto
               .get(AES.GCM)
-              .keyGenerator()
+              .keyGenerator(Key.Size.B256)
               .generateKey()
               .also { key ->
-                val rawBytes = key.encodeTo(AES.Key.Format.RAW)
+                val rawBytes = key.encodeToByteArray(AES.Key.Format.RAW)
                 val secretKeyEntry = SecretKeyEntry(SecretKeySpec(rawBytes, "AES"))
                 keyStore.setEntry(alias, secretKeyEntry, PasswordProtection(secretKeyPassword))
 

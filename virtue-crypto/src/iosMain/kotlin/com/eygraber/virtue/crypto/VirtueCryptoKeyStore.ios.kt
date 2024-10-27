@@ -4,9 +4,10 @@ package com.eygraber.virtue.crypto
 
 import com.eygraber.virtue.utils.runCatchingCoroutine
 import dev.whyoleg.cryptography.CryptographyProvider
-import dev.whyoleg.cryptography.algorithms.digest.SHA256
-import dev.whyoleg.cryptography.algorithms.symmetric.AES
-import dev.whyoleg.cryptography.operations.cipher.AuthenticatedCipher
+import dev.whyoleg.cryptography.algorithms.AES
+import dev.whyoleg.cryptography.algorithms.AES.Key
+import dev.whyoleg.cryptography.algorithms.SHA256
+import dev.whyoleg.cryptography.operations.AuthenticatedCipher
 import dev.whyoleg.cryptography.providers.openssl3.Openssl3
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.MemScope
@@ -82,10 +83,10 @@ public actual class VirtueCryptoKeyStore {
           null ->
             crypto
               .get(AES.GCM)
-              .keyGenerator()
+              .keyGenerator(Key.Size.B256)
               .generateKey()
               .also { key ->
-                storeKey(alias, key.encodeTo(AES.Key.Format.RAW), isDeviceUnlockRequired)
+                storeKey(alias, key.encodeToByteArray(AES.Key.Format.RAW), isDeviceUnlockRequired)
               }
               .cipher()
 
@@ -93,7 +94,7 @@ public actual class VirtueCryptoKeyStore {
             crypto
               .get(AES.GCM)
               .keyDecoder()
-              .decodeFrom(AES.Key.Format.RAW, storedKey)
+              .decodeFromByteArray(AES.Key.Format.RAW, storedKey)
               .cipher()
         },
       )

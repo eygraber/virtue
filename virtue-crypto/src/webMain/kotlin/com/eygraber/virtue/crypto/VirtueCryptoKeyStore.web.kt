@@ -4,9 +4,10 @@ import com.eygraber.virtue.browser.platform.IndexedDb
 import com.eygraber.virtue.utils.runCatchingCoroutine
 import com.juul.indexeddb.external.IDBKey
 import dev.whyoleg.cryptography.CryptographyProvider
-import dev.whyoleg.cryptography.algorithms.digest.SHA256
-import dev.whyoleg.cryptography.algorithms.symmetric.AES
-import dev.whyoleg.cryptography.operations.cipher.AuthenticatedCipher
+import dev.whyoleg.cryptography.algorithms.AES
+import dev.whyoleg.cryptography.algorithms.AES.Key
+import dev.whyoleg.cryptography.algorithms.SHA256
+import dev.whyoleg.cryptography.operations.AuthenticatedCipher
 import dev.whyoleg.cryptography.providers.webcrypto.WebCrypto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -41,10 +42,10 @@ public actual class VirtueCryptoKeyStore(
         null -> KeyStoreResult.Success(
           crypto
             .get(AES.GCM)
-            .keyGenerator()
+            .keyGenerator(Key.Size.B256)
             .generateKey()
             .also { key ->
-              val keyBase64 = Base64.Default.encode(key.encodeTo(AES.Key.Format.RAW))
+              val keyBase64 = Base64.Default.encode(key.encodeToByteArray(AES.Key.Format.RAW))
 
               database.writableKeyValueStore { store ->
                 store.put(item = keyBase64, key = key(alias))
@@ -57,7 +58,7 @@ public actual class VirtueCryptoKeyStore(
           crypto
             .get(AES.GCM)
             .keyDecoder()
-            .decodeFrom(AES.Key.Format.RAW, Base64.decode(storedKey.toString()))
+            .decodeFromByteArray(AES.Key.Format.RAW, Base64.decode(storedKey.toString()))
             .cipher(),
         )
       }

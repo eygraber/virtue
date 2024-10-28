@@ -16,7 +16,7 @@ public actual class ThemeSettingStorage(
 ) {
   public actual suspend fun load(): ThemeSetting? =
     withContext(dispatcher) {
-      val file = File(paths.configDir, FILENAME)
+      val file = File(paths.projectConfigDir, FILENAME)
       if(file.exists() && file.canRead()) {
         val setting = file.readText().trimEnd()
         ThemeSetting.entries.find { it.name == setting }
@@ -28,7 +28,7 @@ public actual class ThemeSettingStorage(
 
   public actual suspend fun store(setting: ThemeSetting) {
     withContext(dispatcher) {
-      File(paths.configDir, FILENAME).writeText(setting.name)
+      File(paths.projectConfigDir, FILENAME).writeText(setting.name)
     }
   }
 }

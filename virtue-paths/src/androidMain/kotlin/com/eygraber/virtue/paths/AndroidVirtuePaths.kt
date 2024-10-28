@@ -1,5 +1,6 @@
 package com.eygraber.virtue.paths
 
+import android.os.Environment
 import com.eygraber.virtue.android.AppContext
 import com.eygraber.virtue.di.scopes.AppSingleton
 import kotlinx.coroutines.Dispatchers
@@ -22,23 +23,18 @@ public class AndroidVirtuePaths(
     context.dataDir.absolutePath
   }
 
-  override val cacheDir: String by lazy {
-    context.cacheDir.absolutePath
+  override val downloadsDir: String by lazy {
+    context
+      .getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+      ?.absolutePath
+      ?: projectDataDir
   }
 
   override val projectCacheDir: String by lazy {
     context.cacheDir.absolutePath
   }
 
-  override val configDir: String by lazy {
-    context.filesDir.absolutePath
-  }
-
   override val projectConfigDir: String by lazy {
-    context.filesDir.absolutePath
-  }
-
-  override val dataDir: String by lazy {
     context.filesDir.absolutePath
   }
 
@@ -50,20 +46,12 @@ public class AndroidVirtuePaths(
     context.noBackupFilesDir.absolutePath
   }
 
-  override val dataLocalDir: String by lazy {
-    context.filesDir.absolutePath
-  }
-
   override val projectDataLocalDir: String by lazy {
     context.filesDir.absolutePath
   }
 
-  override val preferenceDir: String by lazy {
-    context.filesDir.absolutePath
-  }
-
-  override val projectPreferenceDir: String by lazy {
-    context.filesDir.absolutePath
+  override val projectLogsDir: String by lazy {
+    File(context.cacheDir, "logs").absolutePath
   }
 }
 
@@ -74,6 +62,5 @@ public suspend fun VirtuePaths.clearAllProjectData() {
     File(projectDataDir).deleteRecursively()
     File(noBackupDataDir).deleteRecursively()
     File(projectDataLocalDir).deleteRecursively()
-    File(projectPreferenceDir).deleteRecursively()
   }
 }

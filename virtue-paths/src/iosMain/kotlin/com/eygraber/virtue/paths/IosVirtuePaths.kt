@@ -38,33 +38,24 @@ public class IosVirtuePaths : VirtuePaths {
     NSHomeDirectory()
   }
 
-  override val cacheDir: String by lazy {
-    (fileManager.URLsForDirectory(NSCachesDirectory, NSUserDomainMask).first() as NSURL).createDirectory().path!!
+  override val downloadsDir: String by lazy {
+    projectDataLocalDir
   }
 
   override val projectCacheDir: String by lazy {
-    cacheDir
-  }
-
-  override val configDir: String by lazy {
-
-    libraryAppSupport.URLByAppendingPathComponent("config", isDirectory = true)!!.createDirectory().path!!
+    (fileManager.URLsForDirectory(NSCachesDirectory, NSUserDomainMask).first() as NSURL).createDirectory().path!!
   }
 
   override val projectConfigDir: String by lazy {
-    configDir
+    libraryAppSupport.URLByAppendingPathComponent("config", isDirectory = true)!!.createDirectory().path!!
   }
 
   public val documentDataDir: String by lazy {
     documents.URLByAppendingPathComponent("data", isDirectory = true)!!.createDirectory().path!!
   }
 
-  override val dataDir: String by lazy {
-    libraryAppSupport.URLByAppendingPathComponent("data", isDirectory = true)!!.createDirectory().path!!
-  }
-
   override val projectDataDir: String by lazy {
-    dataDir
+    libraryAppSupport.URLByAppendingPathComponent("data", isDirectory = true)!!.createDirectory().path!!
   }
 
   @OptIn(ExperimentalForeignApi::class)
@@ -81,20 +72,12 @@ public class IosVirtuePaths : VirtuePaths {
     }.path!!
   }
 
-  override val dataLocalDir: String by lazy {
-    dataDir
-  }
-
   override val projectDataLocalDir: String by lazy {
     projectDataDir
   }
 
-  override val preferenceDir: String by lazy {
-    libraryAppSupport.URLByAppendingPathComponent("preference", isDirectory = true)!!.createDirectory().path!!
-  }
-
-  override val projectPreferenceDir: String by lazy {
-    preferenceDir
+  override val projectLogsDir: String by lazy {
+    projectCacheDir
   }
 
   @OptIn(ExperimentalForeignApi::class)

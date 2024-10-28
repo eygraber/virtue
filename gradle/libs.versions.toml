@@ -82,7 +82,7 @@ detektEygraber-style = { module = "com.eygraber.detekt.rules:style", version.ref
 indexedDb-core = { module = "com.eygraber.indexeddb:core", version.ref = "indexedDb" }
 indexedDb-externals = { module = "com.eygraber.indexeddb:external", version.ref = "indexedDb" }
 
-jvmDirectories = "dev.dirs:directories:26"
+jvmDirectories = "net.harawata:appdirs:1.2.2"
 jvmCredentialSecureStorage = "com.microsoft:credential-secure-storage:1.0.3"
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }

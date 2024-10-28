@@ -2,12 +2,11 @@ package com.eygraber.virtue.paths
 
 import com.eygraber.virtue.config.VirtueAppInfo
 import com.eygraber.virtue.di.scopes.AppSingleton
-import dev.dirs.BaseDirectories
-import dev.dirs.ProjectDirectories
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 import me.tatarka.inject.annotations.Provides
+import net.harawata.appdirs.AppDirsFactory
 import java.io.File
 
 public actual interface VirtuePathsProvider {
@@ -20,16 +19,8 @@ public actual interface VirtuePathsProvider {
 public class JvmVirtuePaths(
   private val appInfo: VirtueAppInfo,
 ) : VirtuePaths {
-  private val baseDirs by lazy {
-    BaseDirectories.get()
-  }
-
-  private val projectDirs by lazy {
-    ProjectDirectories.from(
-      appInfo.packageName,
-      appInfo.orgName.orEmpty(),
-      appInfo.name,
-    )
+  private val appDirs by lazy {
+    AppDirsFactory.getInstance()
   }
 
   private fun String.alsoMkDirs(): String = also {
@@ -37,51 +28,73 @@ public class JvmVirtuePaths(
   }
 
   override val userHomeDir: String by lazy {
-    baseDirs.homeDir.alsoMkDirs()
+    System.getProperty("user.home").alsoMkDirs()
   }
 
-  override val cacheDir: String by lazy {
-    baseDirs.cacheDir.alsoMkDirs()
+  override val downloadsDir: String by lazy {
+    appDirs
+      .getUserDownloadsDir(
+        appInfo.name,
+        appInfo.versionName,
+        appInfo.orgName,
+      )
+      .alsoMkDirs()
   }
 
   override val projectCacheDir: String by lazy {
-    projectDirs.cacheDir.alsoMkDirs()
-  }
-
-  override val configDir: String by lazy {
-    baseDirs.configDir.alsoMkDirs()
+    appDirs
+      .getUserCacheDir(
+        appInfo.name,
+        appInfo.versionName,
+        appInfo.orgName,
+      )
+      .alsoMkDirs()
   }
 
   override val projectConfigDir: String by lazy {
-    projectDirs.configDir.alsoMkDirs()
-  }
-
-  override val dataDir: String by lazy {
-    baseDirs.dataDir.alsoMkDirs()
+    appDirs
+      .getUserConfigDir(
+        appInfo.name,
+        appInfo.versionName,
+        appInfo.orgName,
+      )
+      .alsoMkDirs()
   }
 
   override val projectDataDir: String by lazy {
-    projectDirs.dataDir.alsoMkDirs()
+    appDirs
+      .getUserDataDir(
+        appInfo.name,
+        appInfo.versionName,
+        appInfo.orgName,
+        true,
+      )
+      .alsoMkDirs()
   }
 
   override val noBackupDataDir: String by lazy {
     (projectDataLocalDir + File.separator + "noBackup").alsoMkDirs()
   }
 
-  override val dataLocalDir: String by lazy {
-    baseDirs.dataLocalDir.alsoMkDirs()
-  }
-
   override val projectDataLocalDir: String by lazy {
-    projectDirs.dataLocalDir.alsoMkDirs()
+    appDirs
+      .getUserDataDir(
+        appInfo.name,
+        appInfo.versionName,
+        appInfo.orgName,
+        false,
+      )
+      .alsoMkDirs()
   }
 
-  override val preferenceDir: String by lazy {
-    baseDirs.preferenceDir.alsoMkDirs()
-  }
-
-  override val projectPreferenceDir: String by lazy {
-    projectDirs.preferenceDir.alsoMkDirs()
+  override val projectLogsDir: String by lazy {
+    appDirs
+      .getUserLogDir(
+        appInfo.name,
+        appInfo.versionName,
+        appInfo.orgName,
+      )
+      .alsoMkDirs()
   }
 }
 
@@ -92,6 +105,5 @@ public suspend fun VirtuePaths.clearAllProjectData() {
     File(projectDataDir).deleteRecursively()
     File(noBackupDataDir).deleteRecursively()
     File(projectDataLocalDir).deleteRecursively()
-    File(projectPreferenceDir).deleteRecursively()
   }
 }

@@ -8,6 +8,7 @@ plugins {
   alias(libs.plugins.kotlinxSerialization)
   alias(libs.plugins.ksp)
   alias(libs.plugins.dependencyAnalysis)
+  alias(libs.plugins.paparazzi)
 }
 
 group = "samples-auth-shared"
@@ -26,6 +27,9 @@ kotlin {
   }
 
   sourceSets {
+    androidUnitTest.dependencies {
+      implementation(libs.bundles.test.paparazzi)
+    }
     commonMain {
       dependencies {
         implementation(projects.virtueApp)

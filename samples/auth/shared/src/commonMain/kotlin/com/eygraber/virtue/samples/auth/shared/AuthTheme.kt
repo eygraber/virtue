@@ -21,13 +21,14 @@ fun AuthPreviewTheme(
   content: @Composable () -> Unit,
 ) {
   AnimatedContent(targetState = 0) {
-    CompositionLocalProvider(
-      LocalAnimatedVisibilityScope provides this,
+    MaterialTheme(
+      colorScheme = colorScheme
     ) {
-      MaterialTheme(
-        colorScheme = colorScheme,
-        content = content,
-      )
+      CompositionLocalProvider(
+        LocalAnimatedVisibilityScope provides this,
+      ) {
+        content()
+      }
     }
   }
 }

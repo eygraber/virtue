@@ -37,6 +37,8 @@ kstore = "0.9.0"
 
 ktlint = "1.4.0"
 
+paparazzi = "1.3.5-SNAPSHOT"
+
 vice = "0.9.1"
 
 [plugins]
@@ -47,6 +49,7 @@ dependencyAnalysisRoot = { id = "com.autonomousapps.dependency-analysis", versio
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 
 [libraries]
 android-desugar = "com.android.tools:desugar_jdk_libs:2.1.2"
@@ -108,3 +111,14 @@ uri = "com.eygraber:uri-kmp:0.0.18"
 vice-core = { module = "com.eygraber:vice-core", version.ref = "vice" }
 vice-nav = { module = "com.eygraber:vice-nav", version.ref = "vice" }
 vice-sources = { module = "com.eygraber:vice-sources", version.ref = "vice" }
+
+test-junit = "junit:junit:4.13.2"
+test-paparazzi = { module = "app.cash.paparazzi:paparazzi", version.ref = "paparazzi" }
+test-parameterInjector = "com.google.testparameterinjector:test-parameter-injector:1.18"
+
+[bundles]
+test-paparazzi = [
+    "test-junit",
+    "test-paparazzi",
+    "test-parameterInjector"
+]

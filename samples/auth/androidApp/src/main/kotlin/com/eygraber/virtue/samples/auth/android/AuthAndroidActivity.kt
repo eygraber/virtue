@@ -13,9 +13,7 @@ import com.eygraber.virtue.session.nav.VirtueDeepLink
 class AuthAndroidActivity : VirtueActivity<AuthAppComponent, AuthSessionComponent, Routes>() {
   override val sessionParams = AuthSessionParams
 
-  override fun createDeepLink(deepLink: Uri) = Routes.fromUri(deepLink)?.let { route ->
-    VirtueDeepLink(route)
-  }
+  override fun createDeepLink(deepLink: Uri) = VirtueDeepLink(Routes.fromUri(deepLink))
 
   override fun createSessionComponent(
     appComponent: AuthAppComponent,

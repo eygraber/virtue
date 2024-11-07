@@ -14,7 +14,7 @@ import me.tatarka.inject.annotations.Provides
 
 @Component
 public abstract class AndroidComponent(
-  @get:Provides public val context: AppContext,
+  @get:Provides public val context: @AppContext Context,
 ) {
   @Provides public fun assetManager(): AssetManager = context.assets
   @Provides public fun contentResolver(): ContentResolver = context.contentResolver

@@ -10,3 +10,7 @@ plugins {
 android {
   namespace = "com.eygraber.virtue.android"
 }
+
+dependencies {
+  implementation(libs.kotlinInject.runtime)
+}

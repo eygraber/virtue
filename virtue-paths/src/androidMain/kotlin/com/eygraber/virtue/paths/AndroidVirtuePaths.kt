@@ -1,5 +1,6 @@
 package com.eygraber.virtue.paths
 
+import android.content.Context
 import android.os.Environment
 import com.eygraber.virtue.android.AppContext
 import com.eygraber.virtue.di.scopes.AppSingleton
@@ -17,7 +18,8 @@ public actual interface VirtuePathsProvider {
 @AppSingleton
 @Inject
 public class AndroidVirtuePaths(
-  private val context: AppContext,
+  @AppContext
+  private val context: Context,
 ) : VirtuePaths {
   override val userHomeDir: String by lazy {
     context.dataDir.absolutePath

@@ -7,7 +7,7 @@ import me.tatarka.inject.annotations.Provides
 
 @Component
 public actual abstract class VirtuePlatformSessionComponent(
-  @get:Provides @ActivityContext public val context: Context,
+  @get:Provides public val context: @ActivityContext Context,
 ) {
   public actual companion object
 }

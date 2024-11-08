@@ -25,6 +25,7 @@ import com.eygraber.virtue.session.VirtueSessionComponent
 import com.eygraber.virtue.session.VirtueSessionParams
 import com.eygraber.virtue.session.nav.VirtueRoute
 import com.eygraber.virtue.theme.ThemeSetting
+import com.eygraber.virtue.theme.compose.isApplicationInDarkTheme
 import java.awt.Dimension
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -36,6 +37,7 @@ public fun <A : VirtueAppComponent, S : VirtueSessionComponent, VR : VirtueRoute
   configureInitialSessionParams: (VirtueSessionParams<VR>, S) -> VirtueSessionParams<VR> = { params, _ -> params },
   onAllSessionsClosed: ApplicationScope.() -> Unit = { exitApplication() },
   defaultThemeSetting: ThemeSetting = ThemeSetting.System,
+  sessionUiWrapper: @Composable (A, Boolean, @Composable () -> Unit) -> Unit = { _, _, content -> content() },
 ) {
   val virtuePlatformComponent: VirtuePlatformComponent =
     VirtuePlatformComponent.create()
@@ -105,13 +107,17 @@ public fun <A : VirtueAppComponent, S : VirtueSessionComponent, VR : VirtueRoute
           WithBackPressDispatching(
             onBackPressedDispatcher = (sessionComponent as OnBackPressDispatcherProvider).onBackPressedDispatcher,
           ) {
-            @Suppress("UNCHECKED_CAST")
-            sessionComponent.session.SessionUi(
-              sessionComponent = sessionComponent as S,
-              params = sessionParams.copy(
-                initialRoute = params.initialRoute as? VR ?: sessionParams.initialRoute,
-              ),
-            )
+            val isApplicationInDarkTheme = appComponent.themeSettings.isApplicationInDarkTheme()
+            sessionUiWrapper(appComponent, isApplicationInDarkTheme) {
+              @Suppress("UNCHECKED_CAST")
+              sessionComponent.session.SessionUi(
+                sessionComponent = sessionComponent as S,
+                params = sessionParams.copy(
+                  initialRoute = params.initialRoute as? VR ?: sessionParams.initialRoute,
+                ),
+                isApplicationInDarkTheme = isApplicationInDarkTheme,
+              )
+            }
           }
         }
       }

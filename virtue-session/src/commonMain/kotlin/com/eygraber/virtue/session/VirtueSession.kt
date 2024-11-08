@@ -21,8 +21,6 @@ import com.eygraber.virtue.session.nav.VirtueNavController
 import com.eygraber.virtue.session.nav.VirtueRoute
 import com.eygraber.virtue.session.nav.currentBackstackWithoutGraphs
 import com.eygraber.virtue.session.nav.rememberVirtueNavController
-import com.eygraber.virtue.theme.ThemeSettings
-import com.eygraber.virtue.theme.compose.isApplicationInDarkTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -37,9 +35,7 @@ public typealias VirtueSessionTheme = @Composable (
 
 @SessionSingleton
 @Inject
-public class VirtueSession(
-  private val themeSettings: ThemeSettings,
-) {
+public class VirtueSession {
   public class Params<T : VirtueSessionComponent, VR : VirtueRoute>(
     public val initialRoute: VR,
     public val routeClass: KClass<VR>,
@@ -75,6 +71,7 @@ public class VirtueSession(
   public fun <T : VirtueSessionComponent, VR : VirtueRoute> SessionUi(
     sessionComponent: T,
     params: Params<T, VR>,
+    isApplicationInDarkTheme: Boolean,
   ) {
     val navController = rememberVirtueNavController(params.routeClass, params.initialRoute)
 
@@ -94,7 +91,7 @@ public class VirtueSession(
       isBackHandlerEnabled = navController.popBackStack()
     }
 
-    params.theme(themeSettings.isApplicationInDarkTheme()) {
+    params.theme(isApplicationInDarkTheme) {
       PlatformNavigation(
         navController = navController,
       )

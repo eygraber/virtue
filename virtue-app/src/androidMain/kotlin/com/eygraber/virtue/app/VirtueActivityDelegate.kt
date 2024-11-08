@@ -53,7 +53,12 @@ public class VirtueActivityDelegate<A, S, VR>(
     createSessionComponent(appComponent, virtuePlatformSessionComponent)
   }
 
-  public fun onCreate(savedInstanceState: Bundle?, isEdgeToEdge: Boolean, callSuper: () -> Unit) {
+  public fun onCreate(
+    savedInstanceState: Bundle?,
+    isEdgeToEdge: Boolean,
+    sessionUiWrapper: @Composable (A, Boolean, @Composable () -> Unit) -> Unit,
+    callSuper: () -> Unit,
+  ) {
     savedInstanceState?.let(sessionComponent.stateManager::onRestoreState)
 
     if(isEdgeToEdge) {
@@ -71,12 +76,16 @@ public class VirtueActivityDelegate<A, S, VR>(
         )
       }
 
-      sessionComponent.session.SessionUi(
-        sessionComponent = sessionComponent,
-        params = sessionParams().copy(
-          initialRoute = initialRoute,
-        ),
-      )
+      val isApplicationInDarkTheme = appComponent.themeSettings.isApplicationInDarkTheme()
+      sessionUiWrapper(appComponent, isApplicationInDarkTheme) {
+        sessionComponent.session.SessionUi(
+          sessionComponent = sessionComponent,
+          params = sessionParams().copy(
+            initialRoute = initialRoute,
+          ),
+          isApplicationInDarkTheme = isApplicationInDarkTheme,
+        )
+      }
     }
   }
 

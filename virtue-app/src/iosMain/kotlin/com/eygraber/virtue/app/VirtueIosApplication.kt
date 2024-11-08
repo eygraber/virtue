@@ -1,5 +1,6 @@
 package com.eygraber.virtue.app
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.ComposeUIViewController
 import com.eygraber.virtue.back.press.dispatch.OnBackPressDispatcherProvider
 import com.eygraber.virtue.back.press.dispatch.WithBackPressDispatching
@@ -12,6 +13,7 @@ import com.eygraber.virtue.session.VirtueSession
 import com.eygraber.virtue.session.VirtueSessionComponent
 import com.eygraber.virtue.session.nav.VirtueRoute
 import com.eygraber.virtue.theme.ThemeSetting
+import com.eygraber.virtue.theme.compose.isApplicationInDarkTheme
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -63,14 +65,27 @@ public abstract class VirtueApplication<A : VirtueAppComponent, S : VirtueSessio
     appComponent.initializer.initialize()
   }
 
+  @Composable
+  protected open fun SessionUiWrapper(
+    appComponent: A,
+    isApplicationInDarkTheme: Boolean,
+    content: @Composable () -> Unit,
+  ) {
+    content()
+  }
+
   protected fun createVirtueViewController(): UIViewController = ComposeUIViewController {
     WithBackPressDispatching(
       onBackPressedDispatcher = (sessionComponent as OnBackPressDispatcherProvider).onBackPressedDispatcher,
     ) {
-      sessionComponent.session.SessionUi(
-        sessionComponent = sessionComponent,
-        params = sessionParams,
-      )
+      val isApplicationInDarkTheme = appComponent.themeSettings.isApplicationInDarkTheme()
+      SessionUiWrapper(appComponent, isApplicationInDarkTheme) {
+        sessionComponent.session.SessionUi(
+          sessionComponent = sessionComponent,
+          params = sessionParams,
+          isApplicationInDarkTheme = isApplicationInDarkTheme,
+        )
+      }
     }
   }
 }

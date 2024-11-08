@@ -1,5 +1,6 @@
 package com.eygraber.virtue.app
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.CanvasBasedWindow
 import com.eygraber.uri.Uri
@@ -15,6 +16,7 @@ import com.eygraber.virtue.session.VirtueSession
 import com.eygraber.virtue.session.VirtueSessionComponent
 import com.eygraber.virtue.session.nav.VirtueRoute
 import com.eygraber.virtue.theme.ThemeSetting
+import com.eygraber.virtue.theme.compose.isApplicationInDarkTheme
 import org.jetbrains.skiko.wasm.onWasmReady
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -25,6 +27,7 @@ public fun <A : VirtueAppComponent, S : VirtueSessionComponent, VR : VirtueRoute
   sessionParams: VirtueSession.Params<S, VR>,
   defaultThemeSetting: ThemeSetting = ThemeSetting.System,
   initialRouteProvider: (Uri) -> VR = { sessionParams.initialRoute },
+  sessionUiWrapper: @Composable (A, Boolean, @Composable () -> Unit) -> Unit = { _, _, content -> content() },
 ) {
   val webPlatformComponent = VirtueWebPlatformComponent.create()
 
@@ -55,12 +58,16 @@ public fun <A : VirtueAppComponent, S : VirtueSessionComponent, VR : VirtueRoute
       WithBackPressDispatching(
         onBackPressedDispatcher = (sessionComponent as OnBackPressDispatcherProvider).onBackPressedDispatcher,
       ) {
-        sessionComponent.session.SessionUi(
-          sessionComponent = sessionComponent,
-          params = sessionParams.copy(
-            initialRoute = initialRoute,
-          ),
-        )
+        val isApplicationInDarkTheme = appComponent.themeSettings.isApplicationInDarkTheme()
+        sessionUiWrapper(appComponent, isApplicationInDarkTheme) {
+          sessionComponent.session.SessionUi(
+            sessionComponent = sessionComponent,
+            params = sessionParams.copy(
+              initialRoute = initialRoute,
+            ),
+            isApplicationInDarkTheme = isApplicationInDarkTheme,
+          )
+        }
       }
     }
   }

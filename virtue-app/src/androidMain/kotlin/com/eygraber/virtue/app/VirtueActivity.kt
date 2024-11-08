@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.annotation.CallSuper
+import androidx.compose.runtime.Composable
 import com.eygraber.uri.Uri
 import com.eygraber.virtue.di.components.VirtueAppComponent
 import com.eygraber.virtue.di.components.VirtuePlatformSessionComponent
@@ -46,9 +47,22 @@ public abstract class VirtueActivity<A, S, VR> : ComponentActivity()
   ): VirtueDeepLink<VR>? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    delegate.onCreate(savedInstanceState, isEdgeToEdge) {
+    delegate.onCreate(
+      savedInstanceState = savedInstanceState,
+      isEdgeToEdge = isEdgeToEdge,
+      sessionUiWrapper = { _, _, content -> content() },
+    ) {
       super.onCreate(savedInstanceState)
     }
+  }
+
+  @Composable
+  protected open fun SessionUiWrapper(
+    appComponent: A,
+    isApplicationInDarkTheme: Boolean,
+    content: @Composable () -> Unit,
+  ) {
+    content()
   }
 
   @CallSuper

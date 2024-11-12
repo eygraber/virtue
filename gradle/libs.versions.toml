@@ -18,7 +18,7 @@ conventions = "0.0.78"
 cryptoKmp = "0.4.0"
 
 detekt = "1.23.7"
-detektCompose = "0.4.17"
+detektCompose = "0.4.18"
 detektEygraber = "1.0.11"
 
 indexedDb = "0.0.1"

@@ -34,10 +34,6 @@ internal class WebHistory<VR : VirtueRoute>(
       history.isIgnoringPlatformChanges = value
     }
 
-  override fun isIgnoringPlatformChanges(value: Boolean) {
-    history.isIgnoringPlatformChanges(value)
-  }
-
   override fun get(index: Int): History.Entry<VR> = history[index]
 
   override fun push(route: VR): History.Entry<VR> =

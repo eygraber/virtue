@@ -20,13 +20,13 @@ public abstract class VirtueAppInitializer {
 
   public suspend fun isFirstOpen(): Boolean = firstOpen.filterNotNull().first()
 
-  private var initialized = false
+  private var isInitialized = false
 
   @OptIn(DelicateCoroutinesApi::class)
   public fun initialize() {
-    if(initialized) return
+    if(isInitialized) return
 
-    initialized = true
+    isInitialized = true
     if(firstOpen.value == null) {
       GlobalScope.launch {
         val isFirstOpen = deviceKeyValueStorage.getBoolean(FIRST_OPEN, true)

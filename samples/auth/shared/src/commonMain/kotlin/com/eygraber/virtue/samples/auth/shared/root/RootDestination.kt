@@ -8,8 +8,6 @@ import com.eygraber.virtue.samples.auth.shared.Routes
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.KmpComponentCreate
 import me.tatarka.inject.annotations.Provides
-import kotlin.experimental.ExperimentalObjCRefinement
-import kotlin.native.HiddenFromObjC
 
 @DestinationSingleton
 class RootNavigator(
@@ -18,8 +16,6 @@ class RootNavigator(
   val onNavigateToLoggedIn: (Routes) -> Unit,
 )
 
-@OptIn(ExperimentalObjCRefinement::class)
-@HiddenFromObjC
 class RootDestination(
   navigator: RootNavigator,
   route: Routes.Root,

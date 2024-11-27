@@ -27,5 +27,9 @@ kotlin {
     jvmMain.dependencies {
       implementation(projects.virtuePaths)
     }
+
+    wasmJsMain.dependencies {
+      implementation(libs.kotlinx.wasm.browser)
+    }
   }
 }

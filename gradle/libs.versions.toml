@@ -13,7 +13,7 @@ atomicfu = "0.26.0"
 
 composeJetbrains = "1.7.1"
 
-conventions = "0.0.79"
+conventions = "0.0.81"
 
 cryptoKmp = "0.4.0"
 
@@ -23,7 +23,7 @@ detektEygraber = "1.0.11"
 
 indexedDb = "0.0.1"
 
-kotlin = "2.0.20"
+kotlin = "2.1.0"
 
 kotlinInject = "0.7.2"
 
@@ -31,13 +31,13 @@ kotlinx-coroutines = "1.9.0"
 kotlinx-serialization = "1.7.3"
 kotlinx-datetime = "0.6.1"
 
-ksp = "2.0.20-1.0.25"
+ksp = "2.1.0-1.0.28"
 
 kstore = "0.9.1"
 
 ktlint = "1.4.1"
 
-vice = "0.9.4"
+vice = "0.9.5"
 
 [plugins]
 atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
@@ -91,6 +91,7 @@ kotlinx-io = "org.jetbrains.kotlinx:kotlinx-io-core:0.6.0"
 kotlinx-serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cbor", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-wasm-browser = "org.jetbrains.kotlinx:kotlinx-browser:0.3"
 
 kotlinInject-compiler = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp", version.ref = "kotlinInject" }
 kotlinInject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime", version.ref = "kotlinInject" }

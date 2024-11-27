@@ -2,6 +2,8 @@ package com.eygraber.virtue.crypto
 
 import dev.whyoleg.cryptography.operations.AuthenticatedCipher
 import dev.whyoleg.cryptography.random.CryptographyRandom
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import me.tatarka.inject.annotations.Inject
 
 public sealed interface KeyStoreResult<out T> {
@@ -22,6 +24,7 @@ public expect class VirtueCryptoKeyStore {
     alias: String,
     shouldFailInInsecureEnvironments: Boolean = false,
     isDeviceUnlockRequired: Boolean = false,
+    dispatcher: CoroutineDispatcher = Dispatchers.Default,
   ): KeyStoreResult<AuthenticatedCipher>
 }
 

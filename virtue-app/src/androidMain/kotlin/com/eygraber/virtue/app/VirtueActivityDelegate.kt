@@ -67,7 +67,14 @@ public class VirtueActivityDelegate<A, S, VR>(
 
     callSuper()
 
-    val initialRoute = activity.intent?.data?.toUri()?.let(createDeepLink)?.route ?: sessionParams().initialRoute
+    val initialRoute =
+      activity
+        .intent
+        ?.data
+        ?.toUri()
+        ?.let(createDeepLink)
+        ?.route
+        ?: sessionParams().initialRoute
 
     activity.setContent {
       if(isEdgeToEdge) {

@@ -11,6 +11,7 @@ import dev.whyoleg.cryptography.algorithms.AES.Key
 import dev.whyoleg.cryptography.algorithms.SHA256
 import dev.whyoleg.cryptography.operations.AuthenticatedCipher
 import dev.whyoleg.cryptography.providers.jdk.JDK
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -52,8 +53,9 @@ public actual class VirtueCryptoKeyStore(
     alias: String,
     shouldFailInInsecureEnvironments: Boolean,
     isDeviceUnlockRequired: Boolean,
+    dispatcher: CoroutineDispatcher,
   ): KeyStoreResult<AuthenticatedCipher> =
-    withContext(Dispatchers.IO) {
+    withContext(dispatcher) {
       runCatchingCoroutine {
         val keyStorePasswordAsync = loadKeyStorePassword(isDeviceUnlockRequired)
         val keyStore = loadOrCreateKeyStore(
@@ -63,17 +65,21 @@ public actual class VirtueCryptoKeyStore(
         when {
           keyStore == null -> KeyStoreResult.Error.InsecureEnvironment
 
-          keyStore.isKeyEntry(alias) -> {
+          keyStore.isKeyEntry(alias) ->
             if(keyStore.entryInstanceOf(alias, SecretKeyEntry::class.java)) {
-              val key = keyStore.getKey(alias, alias.secretKeyPassword()) as SecretKey
-              KeyStoreResult.Success(
-                crypto.get(AES.GCM).keyDecoder().decodeFromByteArray(AES.Key.Format.RAW, key.encoded).cipher(),
-              )
+              val key = keyStore.getKey(alias, alias.secretKeyPassword()) as? SecretKey
+              if(key == null) {
+                KeyStoreResult.Error.WrongKeyType
+              }
+              else {
+                KeyStoreResult.Success(
+                  crypto.get(AES.GCM).keyDecoder().decodeFromByteArray(AES.Key.Format.RAW, key.encoded).cipher(),
+                )
+              }
             }
             else {
               KeyStoreResult.Error.WrongKeyType
             }
-          }
 
           else -> KeyStoreResult.Success(
             crypto
@@ -98,7 +104,8 @@ public actual class VirtueCryptoKeyStore(
 
   private suspend fun loadOrCreateKeyStore(
     keyStorePasswordAsync: Deferred<CharArray>,
-  ): KeyStore? = withContext(Dispatchers.IO) {
+    dispatcher: CoroutineDispatcher = Dispatchers.IO,
+  ): KeyStore? = withContext(dispatcher) {
     val keyStore = KeyStore.getInstance("BKS")
 
     val keyStorePassword = keyStorePasswordAsync.await()
@@ -128,14 +135,14 @@ public actual class VirtueCryptoKeyStore(
     val secretKeyEntry = SecretKeyEntry(SecretKeySpec(rawBytes, "AES"))
     keyStore.setEntry(alias, secretKeyEntry, PasswordProtection(alias.secretKeyPassword()))
 
-    val saved = saveKeyStore(
+    val isSaved = saveKeyStore(
       keyStore = keyStore,
       keyStorePasswordAsync = keyStorePasswordAsync,
     )
 
     Arrays.fill(rawBytes, 0)
 
-    check(saved) {
+    check(isSaved) {
       "Saving the KeyStore failed because of an insecure environment"
     }
   }
@@ -158,7 +165,7 @@ public actual class VirtueCryptoKeyStore(
 
     val alias = "com.eygraber.virtue.crypto.AndroidCryptoKeyStore"
     val secretKey = if(keyStore.containsAlias(alias)) {
-      keyStore.getKey(alias, null) as SecretKey
+      keyStore.getKey(alias, null) as? SecretKey
     }
     else {
       val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
@@ -168,11 +175,11 @@ public actual class VirtueCryptoKeyStore(
       ).setBlockModes(KeyProperties.BLOCK_MODE_GCM)
         .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
         .setKeySize(256)
-        .also {
+        .also { builder ->
           // there were a lot of issues related to using
           // setUnlockedDeviceRequired(true) before Android 15 (see docs)
           if(Build.VERSION.SDK_INT >= 35) {
-            it.setUnlockedDeviceRequired(isDeviceUnlockRequired)
+            builder.setUnlockedDeviceRequired(isDeviceUnlockRequired)
           }
         }
         .build()

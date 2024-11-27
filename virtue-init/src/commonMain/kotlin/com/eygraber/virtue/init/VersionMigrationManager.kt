@@ -4,6 +4,8 @@ import com.eygraber.virtue.crypto.KeyStoreResult
 import com.eygraber.virtue.di.scopes.AppSingleton
 import com.eygraber.virtue.storage.kv.DeviceKeyValueStorage
 import com.eygraber.virtue.storage.kv.edit
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,8 +49,9 @@ public class VersionMigrationManager(
 
   public suspend fun migrateIfNeeded(
     migrations: List<VersionMigration>,
+    dispatcher: CoroutineDispatcher = Dispatchers.Default,
   ): State {
-    withContext(Dispatchers.Default) {
+    withContext(dispatcher) {
       mutex.withLock {
         if(migrations.isValid()) {
           state.value = State.Running
@@ -57,7 +60,7 @@ public class VersionMigrationManager(
             val persistedVersion = deviceStorage.getInt(MOST_RECENT_MIGRATED_VERSION, -1)
             val lastMigration = migrations.last()
 
-            runCatching {
+            try {
               migrations
                 .filter { it.version in persistedVersion + 1..lastMigration.version }
                 .forEach { migration ->
@@ -76,7 +79,10 @@ public class VersionMigrationManager(
                     throw t
                   }
                 }
-            }.getOrElse { error ->
+            }
+            catch(error: Throwable) {
+              if(error is CancellationException) throw error
+
               if(state.value !is KeyStoreResult.Error) {
                 state.value = State.Failed.Error(error = error)
               }

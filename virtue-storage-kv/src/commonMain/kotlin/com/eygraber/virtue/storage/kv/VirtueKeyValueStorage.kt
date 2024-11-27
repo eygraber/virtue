@@ -1,3 +1,5 @@
+@file:Suppress("MethodOverloading")
+
 package com.eygraber.virtue.storage.kv
 
 import com.eygraber.virtue.storage.kv.VirtueKeyValueStorage.Editable

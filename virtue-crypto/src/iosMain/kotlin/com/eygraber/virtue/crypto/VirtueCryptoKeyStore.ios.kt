@@ -20,8 +20,7 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 import platform.CoreFoundation.CFDictionaryCreate
@@ -76,30 +75,32 @@ public actual class VirtueCryptoKeyStore {
     alias: String,
     shouldFailInInsecureEnvironments: Boolean,
     isDeviceUnlockRequired: Boolean,
-  ): KeyStoreResult<AuthenticatedCipher> = withContext(Dispatchers.IO) {
-    runCatchingCoroutine {
-      KeyStoreResult.Success(
-        when(val storedKey = retrieveKey(alias)) {
-          null ->
-            crypto
-              .get(AES.GCM)
-              .keyGenerator(Key.Size.B256)
-              .generateKey()
-              .also { key ->
-                storeKey(alias, key.encodeToByteArray(AES.Key.Format.RAW), isDeviceUnlockRequired)
-              }
-              .cipher()
+    dispatcher: CoroutineDispatcher,
+  ): KeyStoreResult<AuthenticatedCipher> =
+    withContext(dispatcher) {
+      runCatchingCoroutine {
+        KeyStoreResult.Success(
+          when(val storedKey = retrieveKey(alias)) {
+            null ->
+              crypto
+                .get(AES.GCM)
+                .keyGenerator(Key.Size.B256)
+                .generateKey()
+                .also { key ->
+                  storeKey(alias, key.encodeToByteArray(AES.Key.Format.RAW), isDeviceUnlockRequired)
+                }
+                .cipher()
 
-          else ->
-            crypto
-              .get(AES.GCM)
-              .keyDecoder()
-              .decodeFromByteArray(AES.Key.Format.RAW, storedKey)
-              .cipher()
-        },
-      )
-    }.getOrElse(KeyStoreResult.Error::Generic)
-  }
+            else ->
+              crypto
+                .get(AES.GCM)
+                .keyDecoder()
+                .decodeFromByteArray(AES.Key.Format.RAW, storedKey)
+                .cipher()
+          },
+        )
+      }.getOrElse(KeyStoreResult.Error::Generic)
+    }
 
   private fun retrieveKey(alias: String): ByteArray? = cfRetain(alias) { cfAlias ->
     val cfValue = alloc<CFTypeRefVar>()

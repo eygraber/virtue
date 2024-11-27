@@ -9,7 +9,7 @@ import dev.whyoleg.cryptography.algorithms.AES.Key
 import dev.whyoleg.cryptography.algorithms.SHA256
 import dev.whyoleg.cryptography.operations.AuthenticatedCipher
 import dev.whyoleg.cryptography.providers.webcrypto.WebCrypto
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 import kotlin.io.encoding.Base64
@@ -34,36 +34,38 @@ public actual class VirtueCryptoKeyStore(
     alias: String,
     shouldFailInInsecureEnvironments: Boolean,
     isDeviceUnlockRequired: Boolean,
-  ): KeyStoreResult<AuthenticatedCipher> = withContext(Dispatchers.Default) {
-    runCatchingCoroutine {
-      when(
-        val storedKey = database.readFromKeyValueStore(key(alias))
-      ) {
-        null -> KeyStoreResult.Success(
-          crypto
-            .get(AES.GCM)
-            .keyGenerator(Key.Size.B256)
-            .generateKey()
-            .also { key ->
-              val keyBase64 = Base64.Default.encode(key.encodeToByteArray(AES.Key.Format.RAW))
+    dispatcher: CoroutineDispatcher,
+  ): KeyStoreResult<AuthenticatedCipher> =
+    withContext(dispatcher) {
+      runCatchingCoroutine {
+        when(
+          val storedKey = database.readFromKeyValueStore(key(alias))
+        ) {
+          null -> KeyStoreResult.Success(
+            crypto
+              .get(AES.GCM)
+              .keyGenerator(Key.Size.B256)
+              .generateKey()
+              .also { key ->
+                val keyBase64 = Base64.Default.encode(key.encodeToByteArray(AES.Key.Format.RAW))
 
-              database.writableKeyValueStore { store ->
-                store.put(item = keyBase64, key = key(alias))
+                database.writableKeyValueStore { store ->
+                  store.put(item = keyBase64, key = key(alias))
+                }
               }
-            }
-            .cipher(),
-        )
+              .cipher(),
+          )
 
-        else -> KeyStoreResult.Success(
-          crypto
-            .get(AES.GCM)
-            .keyDecoder()
-            .decodeFromByteArray(AES.Key.Format.RAW, Base64.decode(storedKey.toString()))
-            .cipher(),
-        )
-      }
-    }.getOrElse(KeyStoreResult.Error::Generic)
-  }
+          else -> KeyStoreResult.Success(
+            crypto
+              .get(AES.GCM)
+              .keyDecoder()
+              .decodeFromByteArray(AES.Key.Format.RAW, Base64.decode(storedKey.toString()))
+              .cipher(),
+          )
+        }
+      }.getOrElse(KeyStoreResult.Error::Generic)
+    }
 
   private fun key(alias: String): IDBKey = IDBKey("com.eygraber.virtue.crypto.WebVirtueCryptoKeyStore.$alias")
 }

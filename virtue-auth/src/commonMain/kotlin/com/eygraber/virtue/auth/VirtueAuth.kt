@@ -91,21 +91,19 @@ public class VirtueAuth(
   public val stateFlow: Flow<State> = state.filterNotNull()
 
   public suspend fun initialize() {
-    val isLoggingOut = deviceStorage.getInt(LOG_OUT, IS_NOT_LOGGING_OUT)
+    val loggingOutFlag = deviceStorage.getInt(LOG_OUT, IS_NOT_LOGGING_OUT)
     state.value = when {
-      isLoggingOut != IS_NOT_LOGGING_OUT -> {
-        when(isLoggingOut) {
-          IS_LOGGING_OUT_AUTOMATICALLY -> State.LoggingOut.Automatically
-          IS_LOGGING_OUT_MANUALLY -> State.LoggingOut.Manually
-          IS_LOGGED_OUT -> State.LoggedOut
-          else -> State.Error
-        }
+      loggingOutFlag != IS_NOT_LOGGING_OUT -> when(loggingOutFlag) {
+        IS_LOGGING_OUT_AUTOMATICALLY -> State.LoggingOut.Automatically
+        IS_LOGGING_OUT_MANUALLY -> State.LoggingOut.Manually
+        IS_LOGGED_OUT -> State.LoggedOut
+        else -> State.Error
       }
 
       else -> when(val token = loadToken()) {
         null -> State.LoggedOut
 
-        else -> {
+        else ->
           if(token.isExpired() && token.expirationPolicy is ExpirationPolicy.Expire) {
             startLogout(State.LoggingOut.Automatically)
             State.LoggingOut.Automatically
@@ -113,7 +111,6 @@ public class VirtueAuth(
           else {
             State.LoggedIn
           }
-        }
       }
     }
   }
@@ -168,7 +165,7 @@ public class VirtueAuth(
   /**
    * Will return `true` if there is no token
    */
-  public suspend fun isTokenExpired(): Boolean = loadToken()?.isExpired() ?: true
+  public suspend fun isTokenExpired(): Boolean = loadToken()?.isExpired() != false
 
   public suspend fun currentState(): State = stateFlow.first()
 

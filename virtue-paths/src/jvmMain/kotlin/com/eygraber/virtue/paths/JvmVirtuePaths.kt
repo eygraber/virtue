@@ -2,6 +2,7 @@ package com.eygraber.virtue.paths
 
 import com.eygraber.virtue.config.VirtueAppInfo
 import com.eygraber.virtue.di.scopes.AppSingleton
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
@@ -98,8 +99,10 @@ public class JvmVirtuePaths(
   }
 }
 
-public suspend fun VirtuePaths.clearAllProjectData() {
-  withContext(Dispatchers.IO) {
+public suspend fun VirtuePaths.clearAllProjectData(
+  dispatcher: CoroutineDispatcher = Dispatchers.IO,
+) {
+  withContext(dispatcher) {
     File(projectCacheDir).deleteRecursively()
     File(projectConfigDir).deleteRecursively()
     File(projectDataDir).deleteRecursively()

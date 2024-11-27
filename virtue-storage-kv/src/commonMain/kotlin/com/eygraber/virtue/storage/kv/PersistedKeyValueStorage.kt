@@ -80,7 +80,7 @@ public class PersistedKeyValueStorage(
 
   private suspend inline fun <R> awaitLoaded(block: () -> R): R {
     if(map.value === sentinel) {
-      map.value = store.get()?.associate { it.key to it.value } ?: emptyMap()
+      map.value = store.get()?.associate { it.key to it.value }.orEmpty()
     }
 
     return block()

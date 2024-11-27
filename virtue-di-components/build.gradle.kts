@@ -21,23 +21,23 @@ kotlin {
   }
 
   sourceSets {
-    androidMain {
-      dependencies {
-        api(projects.virtueAndroid)
-      }
+    androidMain.dependencies {
+      api(projects.virtueAndroid)
     }
 
-    commonMain {
-      dependencies {
-        api(projects.virtueConfig)
-        api(projects.virtueDiScopes)
-        api(projects.virtueInit)
-        api(projects.virtuePaths)
-        api(projects.virtueStorageKv)
-        api(projects.virtueTheme)
+    commonMain.dependencies {
+      api(projects.virtueConfig)
+      api(projects.virtueDiScopes)
+      api(projects.virtueInit)
+      api(projects.virtuePaths)
+      api(projects.virtueStorageKv)
+      api(projects.virtueTheme)
 
-        api(libs.kotlinInject.runtime)
-      }
+      api(libs.kotlinInject.runtime)
+    }
+
+    wasmJsMain.dependencies {
+      implementation(libs.kotlinx.wasm.browser)
     }
   }
 }

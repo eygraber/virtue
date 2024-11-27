@@ -16,12 +16,14 @@ kotlin {
   )
 
   sourceSets {
-    commonMain {
-      dependencies {
-        api(projects.virtueDiScopes)
+    commonMain.dependencies {
+      api(projects.virtueDiScopes)
 
-        api(libs.kotlinInject.runtime)
-      }
+      api(libs.kotlinInject.runtime)
+    }
+
+    wasmJsMain.dependencies {
+      implementation(libs.kotlinx.wasm.browser)
     }
   }
 }

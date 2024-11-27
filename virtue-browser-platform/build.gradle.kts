@@ -14,16 +14,18 @@ kotlin {
   )
 
   sourceSets {
-    webMain {
-      dependencies {
-        implementation(projects.virtueUtils)
+    wasmJsMain.dependencies {
+      implementation(libs.kotlinx.wasm.browser)
+    }
 
-        api(libs.indexedDb.core)
-        api(libs.indexedDb.externals)
-        implementation(libs.kotlinx.coroutines.core)
+    webMain.dependencies {
+      implementation(projects.virtueUtils)
 
-        api(libs.kotlinInject.runtime)
-      }
+      api(libs.indexedDb.core)
+      api(libs.indexedDb.externals)
+      implementation(libs.kotlinx.coroutines.core)
+
+      api(libs.kotlinInject.runtime)
     }
   }
 }

@@ -37,7 +37,7 @@ kstore = "0.9.1"
 
 ktlint = "1.4.1"
 
-vice = "0.9.5"
+vice = "0.9.6"
 
 [plugins]
 atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }

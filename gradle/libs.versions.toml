@@ -104,7 +104,7 @@ kstore-storage = { module = "io.github.xxfast:kstore-storage", version.ref = "ks
 # not actually used; just here so renovate picks it up
 ktlint = { module = "com.pinterest.ktlint:ktlint-bom", version.ref = "ktlint" }
 
-uri = "com.eygraber:uri-kmp:0.0.18"
+uri = "com.eygraber:uri-kmp:0.0.19"
 
 vice-core = { module = "com.eygraber:vice-core", version.ref = "vice" }
 vice-nav = { module = "com.eygraber:vice-nav", version.ref = "vice" }

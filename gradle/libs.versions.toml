@@ -66,7 +66,7 @@ buildscript-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugi
 buildscript-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "2.0.0" }
 buildscript-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 buildscript-kotlinxSerialization = { module = "org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin", version.ref = "kotlin" }
-buildscript-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.30.0" }
+buildscript-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.31.0" }
 
 compose-placeholder = "com.eygraber:compose-placeholder-material3:1.0.9"
 

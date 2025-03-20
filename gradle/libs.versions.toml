@@ -23,7 +23,7 @@ detektEygraber = "1.0.11"
 
 indexedDb = "0.0.1"
 
-kotlin = "2.1.10"
+kotlin = "2.1.20"
 
 kotlinInject = "0.7.2"
 

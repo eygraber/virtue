@@ -23,7 +23,7 @@ detektEygraber = "1.0.11"
 
 indexedDb = "0.0.1"
 
-kotlin = "2.1.10"
+kotlin = "2.1.20"
 
 kotlinInject = "0.7.2"
 
@@ -31,7 +31,7 @@ kotlinx-coroutines = "1.10.1"
 kotlinx-serialization = "1.8.0"
 kotlinx-datetime = "0.6.2"
 
-ksp = "2.1.10-1.0.31"
+ksp = "2.1.20-RC3-1.0.31"
 
 kstore = "0.9.1"
 

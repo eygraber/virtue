@@ -43,7 +43,7 @@ vice = "0.9.9"
 atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
 completeKotlin = { id = "com.louiscad.complete-kotlin", version = "1.1.0" }
 conventions = { id = "com.eygraber.conventions", version.ref = "conventions" }
-dependencyAnalysisRoot = { id = "com.autonomousapps.dependency-analysis", version = "2.14.0" }
+dependencyAnalysisRoot = { id = "com.autonomousapps.dependency-analysis", version = "2.15.0" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

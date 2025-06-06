@@ -13,7 +13,7 @@ atomicfu = "0.27.0"
 
 composeJetbrains = "1.7.3"
 
-conventions = "0.0.81"
+conventions = "0.0.83"
 
 cryptoKmp = "0.4.0"
 

@@ -11,7 +11,7 @@ androidx-lifecycle = "2.9.1"
 atomicfuForCmp = "0.23.2"
 atomicfu = "0.27.0"
 
-composeJetbrains = "1.7.3"
+composeJetbrains = "1.8.1"
 
 conventions = "0.0.83"
 
